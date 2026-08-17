@@ -6,6 +6,7 @@ import {
   Clock3,
   FileDown,
   Loader2,
+  MoreHorizontal,
   RotateCcw,
   Save,
   TriangleAlert,
@@ -20,10 +21,16 @@ import { PersonalForm } from "@/components/editor/personal-form"
 import { ProjectsForm } from "@/components/editor/projects-form"
 import { SkillsForm } from "@/components/editor/skills-form"
 import { SummaryForm } from "@/components/editor/summary-form"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePageOverflow } from "@/hooks/use-page-overflow"
-import { cn } from "@/lib/utils"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 
 function SaveStatus() {
@@ -221,23 +228,41 @@ export function CVEditor() {
             )}
             {saving ? "Guardando..." : "Guardar"}
           </Button>
-          <a
-            href="/api/pdf"
-            download="ivan-matos-cv.pdf"
-            aria-disabled={!data || dirty}
-            className={cn(
-              buttonVariants(),
-              (!data || dirty) && "pointer-events-none opacity-50"
-            )}
-            title={dirty ? "Espera a que el CV termine de guardarse antes de exportar." : undefined}
-          >
-            <FileDown className="size-4" />
-            Descargar PDF
-          </a>
-          <Button type="button" variant="outline" onClick={resetChanges} disabled={!data}>
-            <RotateCcw className="size-4" />
-            Restablecer
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button type="button" variant="outline" size="icon" aria-label="Abrir acciones" />
+              }
+            >
+              <MoreHorizontal className="size-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                render={
+                  <a
+                    href="/api/pdf"
+                    download="ivan-matos-cv.pdf"
+                    aria-disabled={!data || dirty}
+                    className={!data || dirty ? "pointer-events-none opacity-50" : undefined}
+                    title={
+                      dirty
+                        ? "Espera a que el CV termine de guardarse antes de exportar."
+                        : undefined
+                    }
+                  />
+                }
+                disabled={!data || dirty}
+              >
+                <FileDown className="size-4" />
+                Descargar PDF
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={resetChanges} disabled={!data}>
+                <RotateCcw className="size-4" />
+                Restablecer
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
       {loading || !data ? (
