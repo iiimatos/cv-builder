@@ -118,6 +118,11 @@
 }
 
 @layer base {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }

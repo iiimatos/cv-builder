@@ -1,0 +1,147 @@
+{
+  "personal": {
+    "firstName": "Ivan",
+    "lastName": "Matos",
+    "professionalTitle": "Ingeniero de software | Desarrollador Full Stack",
+    "phone": "+1 (809) 641-5080",
+    "email": "ivanmatosvillar@gmail.com",
+    "links": [
+      {
+        "id": "link-github",
+        "label": "GitHub",
+        "url": "https://github.com/iiimatos"
+      },
+      {
+        "id": "f8c136d3-320f-4158-84ea-e85e133f20b6",
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/ivan-ernesto-matos-villar-a00b581b3"
+      }
+    ],
+    "location": "Santo Domingo, República Dominicana",
+    "photo": "/profile/profile.jpg"
+  },
+  "summary": "Ingeniero de Software Full Stack con más de 4 años de experiencia desarrollando aplicaciones empresariales y plataformas web para los sectores financiero, gubernamental y privado. Especializado en TypeScript, React, Next.js y NestJS, con experiencia en diseño de APIs REST, SQL Server, integraciones empresariales, Docker, Azure DevOps y CI/CD. Enfocado en arquitectura mantenible, automatización de procesos, seguridad y buenas prácticas de desarrollo.",
+  "experience": [
+    {
+      "id": "exp-united-capital",
+      "company": "United Capital Puesto de Bolsa, S.A.",
+      "position": "Ingeniero de software / Desarrollador Full Stack",
+      "location": "Santo Domingo, República Dominicana",
+      "startDate": "Abril 2024",
+      "endDate": "",
+      "current": true,
+      "description": "Desarrollo de plataformas internas y mejora de flujos de trabajo para operaciones financieras.",
+      "bullets": [
+        "Desarrollo y mantenimiento de funcionalidades full stack con React, Next.js y APIs backend.",
+        "Colaboración con equipos de negocio para convertir necesidades operativas en herramientas confiables.",
+        "Mejora de la calidad de entrega mediante contratos tipados, UI reutilizable y prácticas CI/CD."
+      ],
+      "technologies": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "Azure"
+      ]
+    },
+    {
+      "id": "exp-liga-municipal",
+      "company": "Liga Municipal Dominicana",
+      "position": "Desarrollador Full Stack",
+      "location": "Santo Domingo, República Dominicana",
+      "startDate": "Septiembre 2022",
+      "endDate": "Abril 2024",
+      "current": false,
+      "description": "Desarrollo de sistemas para el sector público y mantenimiento de aplicaciones críticas para el negocio.",
+      "bullets": [
+        "Implementación de módulos para flujos administrativos y de reportes.",
+        "Integración de APIs REST y mejora de experiencias de captura de datos para usuarios internos.",
+        "Soporte a despliegues y mantenimiento en entornos de aplicaciones web."
+      ],
+      "technologies": [
+        "React",
+        ".NET",
+        "SQL Server",
+        "REST APIs",
+        "GitLab CI/CD"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-software",
+      "institution": "Instituto Tecnológico de Santo Domingo",
+      "degree": "Formación en Ingeniería de Software",
+      "startDate": "2018",
+      "endDate": "2022",
+      "description": "Base académica en desarrollo de software, bases de datos y diseño de sistemas."
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-frontend",
+      "name": "Frontend",
+      "skills": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Material UI",
+        "Tailwind CSS"
+      ]
+    },
+    {
+      "id": "skill-backend",
+      "name": "Backend",
+      "skills": [
+        "NestJS",
+        "Node.js",
+        ".NET",
+        "REST APIs"
+      ]
+    },
+    {
+      "id": "skill-databases",
+      "name": "Bases de datos",
+      "skills": [
+        "SQL Server",
+        "PostgreSQL",
+        "TypeORM",
+        "Prisma"
+      ]
+    },
+    {
+      "id": "skill-devops",
+      "name": "DevOps y nube",
+      "skills": [
+        "Docker",
+        "Docker Compose",
+        "Azure",
+        "Azure DevOps",
+        "GitLab CI/CD",
+        "Git"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "id": "lang-spanish",
+      "language": "Español",
+      "level": "Nativo"
+    },
+    {
+      "id": "lang-english",
+      "language": "Inglés",
+      "level": "Profesional"
+    }
+  ],
+  "projects": [],
+  "settings": {
+    "template": "ivan-classic",
+    "fontSize": "normal",
+    "spacing": "normal",
+    "showPhoto": true,
+    "showLocation": true,
+    "showLinks": true,
+    "showProjects": true
+  }
+}
