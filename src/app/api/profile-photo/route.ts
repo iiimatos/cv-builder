@@ -35,12 +35,12 @@ export async function POST(request: Request) {
 
     const bytes = await file.arrayBuffer()
     const profileDir = path.join(process.cwd(), "public", "profile")
-    const fileName = `profile.${extension}`
+    const fileName = `profile-${Date.now()}.${extension}`
 
     await mkdir(profileDir, { recursive: true })
     await writeFile(path.join(profileDir, fileName), Buffer.from(bytes))
 
-    return NextResponse.json({ photo: `/profile/${fileName}?v=${Date.now()}` })
+    return NextResponse.json({ photo: `/profile/${fileName}` })
   } catch {
     return NextResponse.json(
       { error: "No se pudo guardar la foto." },

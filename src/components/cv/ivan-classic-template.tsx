@@ -75,6 +75,7 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
   const links = data.settings.showLinks
     ? data.personal.links.filter((link) => link.label.trim() && link.url.trim())
     : []
+  const photoSrc = data.personal.photo?.split("?")[0] ?? ""
   const dense = data.settings.spacing === "compact" || data.settings.fontSize === "compact"
   const bodyText = dense ? "text-[12px] leading-5" : "text-[13px] leading-[1.55]"
   const smallText = dense ? "text-[10px] leading-4" : "text-[11px] leading-[1.45]"
@@ -102,9 +103,9 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
 
             {data.settings.showPhoto ? (
               <div className="flex justify-start md:justify-end">
-                {data.personal.photo ? (
+                {photoSrc ? (
                   <Image
-                    src={data.personal.photo}
+                    src={photoSrc}
                     alt={`Foto de ${data.personal.firstName} ${data.personal.lastName}`}
                     width={80}
                     height={80}
