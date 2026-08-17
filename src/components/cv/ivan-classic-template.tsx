@@ -88,8 +88,8 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
         className="flex h-[297mm] flex-col overflow-hidden bg-white px-10 py-8"
       >
         <header className="border-b border-zinc-900 pb-4">
-          <div className="grid gap-4 md:grid-cols-[1fr_48mm]">
-            <div>
+          <div className="grid items-start gap-5 md:grid-cols-[1fr_38mm]">
+            <div className="min-w-0">
               <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
                 Currículum profesional
               </p>
@@ -99,6 +99,23 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
               <p className="mt-2 text-sm font-medium text-zinc-700">
                 {data.personal.professionalTitle}
               </p>
+
+              <div className="mt-5 grid gap-x-4 gap-y-1.5 text-[10px] leading-4 text-zinc-600 md:grid-cols-2">
+                {contacts.map(({ icon: Icon, label, value }) => (
+                  <p key={label} className="flex min-w-0 items-center gap-2">
+                    <Icon className="size-3 shrink-0 text-zinc-500" />
+                    <span className="font-semibold text-zinc-800">{label}:</span>
+                    <span className="truncate">{value}</span>
+                  </p>
+                ))}
+                {links.map((link) => (
+                  <p key={link.id} className="flex min-w-0 items-center gap-2">
+                    <LinkIcon className="size-3 shrink-0 text-zinc-500" />
+                    <span className="font-semibold text-zinc-800">{link.label}:</span>
+                    <span className="truncate">{link.url}</span>
+                  </p>
+                ))}
+              </div>
             </div>
 
             {data.settings.showPhoto ? (
@@ -107,34 +124,17 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                   <Image
                     src={photoSrc}
                     alt={`Foto de ${data.personal.firstName} ${data.personal.lastName}`}
-                    width={80}
-                    height={80}
-                    className="size-20 rounded-lg border border-zinc-200 object-cover"
+                    width={144}
+                    height={176}
+                    className="h-[42mm] w-[34mm] rounded-md border border-zinc-200 object-cover shadow-sm"
                   />
                 ) : (
-                  <div className="grid size-20 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                  <div className="grid h-[42mm] w-[34mm] place-items-center rounded-md border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
                     Foto
                   </div>
                 )}
               </div>
             ) : null}
-          </div>
-
-          <div className="mt-3 grid gap-x-4 gap-y-1 text-[10px] leading-4 text-zinc-600 md:grid-cols-2">
-            {contacts.map(({ icon: Icon, label, value }) => (
-              <p key={label} className="flex min-w-0 items-center gap-2">
-                <Icon className="size-3 shrink-0 text-zinc-500" />
-                <span className="font-semibold text-zinc-800">{label}:</span>
-                <span className="truncate">{value}</span>
-              </p>
-            ))}
-            {links.map((link) => (
-              <p key={link.id} className="flex min-w-0 items-center gap-2">
-                <LinkIcon className="size-3 shrink-0 text-zinc-500" />
-                <span className="font-semibold text-zinc-800">{link.label}:</span>
-                <span className="truncate">{link.url}</span>
-              </p>
-            ))}
           </div>
         </header>
 

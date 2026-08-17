@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import type { ChangeEvent } from "react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -45,6 +46,7 @@ export function PersonalForm() {
   }, [personal, reset])
 
   if (!personal) return null
+  const photoPreview = personal.photo?.split("?")[0] ?? ""
 
   const updateLink = (id: string, updates: Partial<PersonalLink>) => {
     setPersonal({
@@ -122,18 +124,32 @@ export function PersonalForm() {
             Se guarda localmente dentro de public/profile.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-input bg-background px-2.5 text-sm font-medium hover:bg-muted">
-            <ImagePlus className="size-4" />
-            {uploadingPhoto ? "Subiendo..." : "Subir foto"}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="sr-only"
-              disabled={uploadingPhoto}
-              onChange={uploadPhoto}
+        <div className="flex flex-wrap items-center gap-4">
+          {photoPreview ? (
+            <Image
+              src={photoPreview}
+              alt="Foto cargada"
+              width={96}
+              height={120}
+              className="h-30 w-24 rounded-md border object-cover"
             />
-          </label>
+          ) : (
+            <div className="grid h-30 w-24 place-items-center rounded-md border bg-muted text-xs text-muted-foreground">
+              Sin foto
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-input bg-background px-2.5 text-sm font-medium hover:bg-muted">
+              <ImagePlus className="size-4" />
+              {uploadingPhoto ? "Subiendo..." : "Subir foto"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                disabled={uploadingPhoto}
+                onChange={uploadPhoto}
+              />
+            </label>
           {personal.photo ? (
             <>
               <span className="max-w-sm truncate text-sm text-muted-foreground">
@@ -146,6 +162,7 @@ export function PersonalForm() {
           ) : (
             <span className="text-sm text-muted-foreground">Sin foto cargada</span>
           )}
+          </div>
         </div>
         {photoError ? <p className="text-sm text-destructive">{photoError}</p> : null}
       </div>
