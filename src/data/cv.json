@@ -20,7 +20,7 @@
     "location": "Santo Domingo, República Dominicana",
     "photo": "/profile/profile-1786988655832.jpg"
   },
-  "summary": "Ingeniero de Software Full Stack con más de 4 años de experiencia en el desarrollo de soluciones empresariales y plataformas web para los sectores financiero, gubernamental y privado. Especializado en TypeScript, React, Next.js y NestJS, con experiencia en arquitectura de software, APIs REST, bases de datos, integraciones empresariales y Cloud & DevOps. Orientado a construir soluciones escalables, seguras y mantenibles, aplicando buenas prácticas de desarrollo y alineando la tecnología con las necesidades del negocio.",
+  "summary": "Ingeniero de Software Full Stack con más de 4 años de experiencia en el desarrollo de soluciones empresariales y plataformas web para los sectores **financiero, gubernamental y privado**. Especializado en **TypeScript, React, Next.js y NestJS**, con experiencia en **arquitectura de software, APIs REST, bases de datos, integraciones empresariales y Cloud & DevOps**. Orientado a construir soluciones **escalables, seguras y mantenibles**, aplicando buenas prácticas de desarrollo y alineando la tecnología con las necesidades del negocio.",
   "experience": [
     {
       "id": "exp-united-capital",
@@ -30,11 +30,11 @@
       "startDate": "Abril 2024",
       "endDate": "",
       "current": true,
-      "description": "Desarrollo de plataformas internas y mejora de flujos de trabajo para operaciones financieras.",
+      "description": "Desarrollo de **plataformas internas** y mejora de **flujos de trabajo** para operaciones financieras.",
       "bullets": [
-        "Desarrollo y mantenimiento de funcionalidades full stack con React, Next.js y APIs backend.",
-        "Colaboración con equipos de negocio para convertir necesidades operativas en herramientas confiables.",
-        "Mejora de la calidad de entrega mediante contratos tipados, UI reutilizable y prácticas CI/CD."
+        "Desarrollo y mantenimiento de funcionalidades **full stack** con **React, Next.js y APIs backend**.",
+        "Colaboración con equipos de negocio para convertir **necesidades operativas** en herramientas confiables.",
+        "Mejora de la calidad de entrega mediante **contratos tipados**, **UI reutilizable** y prácticas **CI/CD**."
       ],
       "technologies": [
         "React",
@@ -52,11 +52,11 @@
       "startDate": "Septiembre 2022",
       "endDate": "Abril 2024",
       "current": false,
-      "description": "Desarrollo de sistemas para el sector público y mantenimiento de aplicaciones críticas para el negocio.",
+      "description": "Desarrollo de sistemas para el **sector público** y mantenimiento de **aplicaciones críticas** para el negocio.",
       "bullets": [
-        "Implementación de módulos para flujos administrativos y de reportes.",
-        "Integración de APIs REST y mejora de experiencias de captura de datos para usuarios internos.",
-        "Soporte a despliegues y mantenimiento en entornos de aplicaciones web."
+        "Implementación de módulos para **flujos administrativos** y de **reportes**.",
+        "Integración de **APIs REST** y mejora de experiencias de captura de datos para usuarios internos.",
+        "Soporte a **despliegues** y mantenimiento en entornos de aplicaciones web."
       ],
       "technologies": [
         "React",

@@ -73,6 +73,7 @@ export function EducationForm() {
             </div>
             <label className="block space-y-1.5">
               <span className="text-sm font-medium">Descripción</span>
+              <span className="block text-xs text-muted-foreground">Acepta Markdown básico.</span>
               <Textarea
                 value={item.description ?? ""}
                 onChange={(event) =>

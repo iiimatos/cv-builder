@@ -138,6 +138,7 @@ function SortableExperience({ item }: SortableExperienceProps) {
 
       <label className="mt-3 block space-y-1.5">
         <span className="text-sm font-medium">Descripción</span>
+        <span className="block text-xs text-muted-foreground">Acepta Markdown básico.</span>
         <Textarea
           value={item.description ?? ""}
           onChange={(event) => updateExperience(item.id, { description: event.target.value })}
@@ -146,6 +147,9 @@ function SortableExperience({ item }: SortableExperienceProps) {
 
       <label className="mt-3 block space-y-1.5">
         <span className="text-sm font-medium">Puntos</span>
+        <span className="block text-xs text-muted-foreground">
+          Un punto por línea. Puedes usar Markdown básico.
+        </span>
         <Textarea
           value={item.bullets.join("\n")}
           onChange={(event) => updateExperience(item.id, { bullets: toLines(event.target.value) })}

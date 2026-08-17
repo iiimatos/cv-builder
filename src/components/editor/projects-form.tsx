@@ -69,6 +69,7 @@ export function ProjectsForm() {
             </div>
             <label className="block space-y-1.5">
               <span className="text-sm font-medium">Descripción</span>
+              <span className="block text-xs text-muted-foreground">Acepta Markdown básico.</span>
               <Textarea
                 value={item.description ?? ""}
                 onChange={(event) => updateProject(item.id, { description: event.target.value })}
@@ -76,6 +77,9 @@ export function ProjectsForm() {
             </label>
             <label className="block space-y-1.5">
               <span className="text-sm font-medium">Puntos</span>
+              <span className="block text-xs text-muted-foreground">
+                Un punto por línea. Puedes usar Markdown básico.
+              </span>
               <Textarea
                 value={item.bullets.join("\n")}
                 onChange={(event) => updateProject(item.id, { bullets: toLines(event.target.value) })}

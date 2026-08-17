@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Globe2, LinkIcon, Mail, MapPin, Phone } from "lucide-react"
 
 import { A4Page } from "@/components/cv/a4-page"
+import { CVMarkdown } from "@/components/cv/cv-markdown"
 import { cn } from "@/lib/utils"
 import type { CVData } from "@/types/cv"
 
@@ -142,7 +143,9 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
           <div className={sectionSpace}>
             {data.summary.trim() ? (
               <Section title="Resumen profesional" dense={dense}>
-                <p className={cn(bodyText, "text-zinc-700")}>{data.summary}</p>
+                <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
+                  {data.summary}
+                </CVMarkdown>
               </Section>
             ) : null}
 
@@ -158,12 +161,16 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                         ) : null}
                       </div>
                       {project.description ? (
-                        <p className={cn(bodyText, "text-zinc-700")}>{project.description}</p>
+                        <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
+                          {project.description}
+                        </CVMarkdown>
                       ) : null}
                       {project.bullets.length > 0 ? (
                         <ul className={cn("list-disc pl-4 text-zinc-700", bodyText)}>
                           {project.bullets.filter(Boolean).map((bullet) => (
-                            <li key={bullet}>{bullet}</li>
+                            <li key={bullet}>
+                              <CVMarkdown>{bullet}</CVMarkdown>
+                            </li>
                           ))}
                         </ul>
                       ) : null}
@@ -202,12 +209,16 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                     </div>
 
                     {item.description ? (
-                      <p className={cn(bodyText, "text-zinc-700")}>{item.description}</p>
+                      <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
+                        {item.description}
+                      </CVMarkdown>
                     ) : null}
 
                     <ul className={cn("list-disc pl-4 text-zinc-700", bodyText, dense ? "space-y-0.5" : "space-y-1")}>
                       {item.bullets.filter(Boolean).map((bullet) => (
-                        <li key={bullet}>{bullet}</li>
+                        <li key={bullet}>
+                          <CVMarkdown>{bullet}</CVMarkdown>
+                        </li>
                       ))}
                     </ul>
 
@@ -231,9 +242,9 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                         {dateRange(item.startDate, item.endDate)}
                       </p>
                       {item.description ? (
-                        <p className={cn("mt-1 text-zinc-600", smallText)}>
+                        <CVMarkdown className={cn("mt-1 text-zinc-600", smallText)}>
                           {item.description}
-                        </p>
+                        </CVMarkdown>
                       ) : null}
                     </article>
                   ))}

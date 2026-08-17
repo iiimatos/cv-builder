@@ -12,7 +12,7 @@ export function SummaryForm() {
       <div>
         <h2 className="text-lg font-semibold">Resumen profesional</h2>
         <p className="text-sm text-muted-foreground">
-          Una descripción breve del perfil profesional.
+          Una descripción breve del perfil profesional. Acepta Markdown básico.
         </p>
       </div>
       <Textarea
