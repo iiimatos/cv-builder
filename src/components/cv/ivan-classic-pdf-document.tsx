@@ -1,0 +1,476 @@
+import {
+  Document,
+  Font,
+  Image,
+  Page,
+  StyleSheet,
+  Text,
+  View,
+} from "@react-pdf/renderer"
+
+import type { CVData } from "@/types/cv"
+
+interface IvanClassicPDFDocumentProps {
+  data: CVData
+  photoPath?: string
+}
+
+const pageWidth = 595.28
+const pageHeight = 841.89
+
+Font.registerHyphenationCallback((word) => [word])
+
+const styles = StyleSheet.create({
+  page: {
+    width: pageWidth,
+    minHeight: pageHeight,
+    paddingHorizontal: 40,
+    paddingVertical: 32,
+    backgroundColor: "#ffffff",
+    color: "#18181b",
+    fontFamily: "Helvetica",
+  },
+  header: {
+    borderBottomWidth: 1.25,
+    borderBottomColor: "#18181b",
+    paddingBottom: 16,
+  },
+  headerGrid: {
+    flexDirection: "row",
+    gap: 20,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  eyebrow: {
+    color: "#71717a",
+    fontSize: 9,
+    fontWeight: 700,
+    letterSpacing: 1.6,
+    textTransform: "uppercase",
+  },
+  name: {
+    marginTop: 8,
+    fontSize: 34,
+    fontWeight: 700,
+    lineHeight: 1,
+  },
+  title: {
+    marginTop: 8,
+    color: "#3f3f46",
+    fontSize: 12,
+    fontWeight: 700,
+  },
+  contactGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+    marginTop: 18,
+  },
+  contactItem: {
+    width: "48%",
+    color: "#52525b",
+    fontSize: 8.5,
+    lineHeight: 1.35,
+  },
+  contactLabel: {
+    color: "#27272a",
+    fontWeight: 700,
+  },
+  photo: {
+    width: 96,
+    height: 120,
+    borderWidth: 1,
+    borderColor: "#e4e4e7",
+    objectFit: "cover",
+  },
+  photoPlaceholder: {
+    width: 96,
+    height: 120,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#e4e4e7",
+    color: "#a1a1aa",
+    fontSize: 8,
+    fontWeight: 700,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  main: {
+    flexDirection: "row",
+    gap: 24,
+    paddingTop: 20,
+  },
+  leftColumn: {
+    flex: 1,
+    gap: 15,
+  },
+  rightColumn: {
+    width: 192,
+    gap: 15,
+    borderLeftWidth: 1,
+    borderLeftColor: "#e4e4e7",
+    paddingLeft: 18,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 8.5,
+    fontWeight: 700,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  sectionRule: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#e4e4e7",
+  },
+  bodyText: {
+    color: "#3f3f46",
+    fontSize: 9.5,
+    lineHeight: 1.45,
+  },
+  smallText: {
+    color: "#3f3f46",
+    fontSize: 8.5,
+    lineHeight: 1.35,
+  },
+  mutedText: {
+    color: "#71717a",
+    fontSize: 8,
+    lineHeight: 1.35,
+  },
+  itemGroup: {
+    gap: 8,
+  },
+  item: {
+    gap: 7,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f4f4f5",
+  },
+  itemNoBorder: {
+    gap: 7,
+  },
+  itemHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 14,
+  },
+  itemTitle: {
+    fontSize: 10.5,
+    fontWeight: 700,
+    lineHeight: 1.25,
+  },
+  itemSubtitle: {
+    color: "#3f3f46",
+    fontSize: 9,
+    fontWeight: 700,
+    lineHeight: 1.35,
+  },
+  date: {
+    color: "#71717a",
+    fontSize: 8,
+    fontWeight: 700,
+    lineHeight: 1.35,
+    textAlign: "right",
+  },
+  bulletRow: {
+    flexDirection: "row",
+    gap: 5,
+    marginBottom: 3,
+  },
+  bulletDot: {
+    width: 5,
+    color: "#3f3f46",
+    fontSize: 9,
+    lineHeight: 1.35,
+  },
+  bulletText: {
+    flex: 1,
+    color: "#3f3f46",
+    fontSize: 9.5,
+    lineHeight: 1.35,
+  },
+  chips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: "#e4e4e7",
+    backgroundColor: "#fafafa",
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    color: "#3f3f46",
+    fontSize: 7.5,
+    fontWeight: 700,
+  },
+  sideItem: {
+    marginBottom: 10,
+  },
+  languageRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 10,
+    marginBottom: 5,
+  },
+  bold: {
+    color: "#18181b",
+    fontWeight: 700,
+  },
+  italic: {
+    fontStyle: "italic",
+  },
+})
+
+type TextStyle = typeof styles.bodyText
+
+function dateRange(startDate?: string, endDate?: string, current?: boolean) {
+  return [startDate, current ? "Actualidad" : endDate].filter(Boolean).join(" - ")
+}
+
+function cleanMarkdown(value: string) {
+  return value
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/[_*~#>`]/g, "")
+}
+
+function MarkdownText({
+  children,
+  style,
+}: {
+  children: string
+  style?: TextStyle | TextStyle[]
+}) {
+  const parts = children.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean)
+
+  return (
+    <Text style={style}>
+      {parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return (
+            <Text key={`${part}-${index}`} style={styles.bold}>
+              {cleanMarkdown(part.slice(2, -2))}
+            </Text>
+          )
+        }
+
+        if (part.startsWith("*") && part.endsWith("*")) {
+          return (
+            <Text key={`${part}-${index}`} style={styles.italic}>
+              {cleanMarkdown(part.slice(1, -1))}
+            </Text>
+          )
+        }
+
+        return cleanMarkdown(part)
+      })}
+    </Text>
+  )
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <View style={styles.sectionRule} />
+      </View>
+      {children}
+    </View>
+  )
+}
+
+function ChipList({ items }: { items: string[] }) {
+  if (items.length === 0) return null
+
+  return (
+    <View style={styles.chips}>
+      {items.map((item) => (
+        <Text key={item} style={styles.chip}>
+          {item}
+        </Text>
+      ))}
+    </View>
+  )
+}
+
+function Bullets({ items }: { items: string[] }) {
+  const bullets = items.filter(Boolean)
+  if (bullets.length === 0) return null
+
+  return (
+    <View>
+      {bullets.map((bullet) => (
+        <View key={bullet} style={styles.bulletRow}>
+          <Text style={styles.bulletDot}>•</Text>
+          <MarkdownText style={styles.bulletText}>{bullet}</MarkdownText>
+        </View>
+      ))}
+    </View>
+  )
+}
+
+function contacts(data: CVData) {
+  return [
+    data.settings.showLocation && data.personal.location
+      ? { label: "Ubicación", value: data.personal.location }
+      : null,
+    data.personal.email ? { label: "Correo", value: data.personal.email } : null,
+    data.personal.phone ? { label: "Teléfono", value: data.personal.phone } : null,
+    ...(data.settings.showLinks
+      ? data.personal.links
+          .filter((link) => link.label.trim() && link.url.trim())
+          .map((link) => ({ label: link.label, value: link.url }))
+      : []),
+  ].filter((item): item is { label: string; value: string } => Boolean(item))
+}
+
+export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) {
+  return (
+    <Document
+      title={`${data.personal.firstName} ${data.personal.lastName} CV`}
+      author={`${data.personal.firstName} ${data.personal.lastName}`}
+    >
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <View style={styles.headerGrid}>
+            <View style={styles.headerContent}>
+              <Text style={styles.eyebrow}>Currículum profesional</Text>
+              <Text style={styles.name}>
+                {data.personal.firstName} {data.personal.lastName}
+              </Text>
+              <Text style={styles.title}>{data.personal.professionalTitle}</Text>
+
+              <View style={styles.contactGrid}>
+                {contacts(data).map((item) => (
+                  <Text key={`${item.label}-${item.value}`} style={styles.contactItem}>
+                    <Text style={styles.contactLabel}>{item.label}: </Text>
+                    {item.value}
+                  </Text>
+                ))}
+              </View>
+            </View>
+
+            {data.settings.showPhoto ? (
+              photoPath ? (
+                // eslint-disable-next-line jsx-a11y/alt-text
+                <Image src={photoPath} style={styles.photo} />
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Text>Foto</Text>
+                </View>
+              )
+            ) : null}
+          </View>
+        </View>
+
+        <View style={styles.main}>
+          <View style={styles.leftColumn}>
+            {data.summary.trim() ? (
+              <Section title="Resumen profesional">
+                <MarkdownText style={styles.bodyText}>{data.summary}</MarkdownText>
+              </Section>
+            ) : null}
+
+            {data.settings.showProjects && data.projects.length > 0 ? (
+              <Section title="Proyectos">
+                <View style={styles.itemGroup}>
+                  {data.projects.map((project) => (
+                    <View key={project.id} style={styles.itemNoBorder}>
+                      <View style={styles.itemHeader}>
+                        <Text style={styles.itemTitle}>{project.name}</Text>
+                        {project.url ? <Text style={styles.date}>{project.url}</Text> : null}
+                      </View>
+                      {project.description ? (
+                        <MarkdownText style={styles.bodyText}>{project.description}</MarkdownText>
+                      ) : null}
+                      <Bullets items={project.bullets} />
+                      <ChipList items={project.technologies} />
+                    </View>
+                  ))}
+                </View>
+              </Section>
+            ) : null}
+
+            <Section title="Experiencia">
+              <View style={styles.itemGroup}>
+                {data.experience.map((item, index) => (
+                  <View
+                    key={item.id}
+                    style={index === data.experience.length - 1 ? styles.itemNoBorder : styles.item}
+                  >
+                    <View style={styles.itemHeader}>
+                      <View>
+                        <Text style={styles.itemTitle}>{item.position}</Text>
+                        <Text style={styles.itemSubtitle}>{item.company}</Text>
+                        {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
+                      </View>
+                      <Text style={styles.date}>
+                        {dateRange(item.startDate, item.endDate, item.current)}
+                      </Text>
+                    </View>
+
+                    {item.description ? (
+                      <MarkdownText style={styles.bodyText}>{item.description}</MarkdownText>
+                    ) : null}
+
+                    <Bullets items={item.bullets} />
+                    <ChipList items={item.technologies} />
+                  </View>
+                ))}
+              </View>
+            </Section>
+          </View>
+
+          <View style={styles.rightColumn}>
+            {data.education.length > 0 ? (
+              <Section title="Educación">
+                {data.education.map((item) => (
+                  <View key={item.id} style={styles.sideItem}>
+                    <Text style={styles.itemTitle}>{item.degree}</Text>
+                    <Text style={styles.smallText}>{item.institution}</Text>
+                    <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
+                    {item.description ? (
+                      <MarkdownText style={styles.smallText}>{item.description}</MarkdownText>
+                    ) : null}
+                  </View>
+                ))}
+              </Section>
+            ) : null}
+
+            {data.skills.length > 0 ? (
+              <Section title="Habilidades">
+                {data.skills.map((category) => (
+                  <View key={category.id} style={styles.sideItem}>
+                    <Text style={styles.itemSubtitle}>{category.name}</Text>
+                    <ChipList items={category.skills} />
+                  </View>
+                ))}
+              </Section>
+            ) : null}
+
+            {data.languages.length > 0 ? (
+              <Section title="Idiomas">
+                {data.languages.map((item) => (
+                  <View key={item.id} style={styles.languageRow}>
+                    <Text style={styles.itemSubtitle}>{item.language}</Text>
+                    <Text style={styles.smallText}>{item.level}</Text>
+                  </View>
+                ))}
+              </Section>
+            ) : null}
+          </View>
+        </View>
+      </Page>
+    </Document>
+  )
+}

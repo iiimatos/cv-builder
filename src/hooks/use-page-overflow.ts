@@ -12,7 +12,10 @@ interface PageOverflow {
 const OVERFLOW_TOLERANCE_PX = 16
 const NEAR_LIMIT_PERCENTAGE = 95
 
-export function usePageOverflow(ref: RefObject<HTMLElement | null>): PageOverflow {
+export function usePageOverflow(
+  ref: RefObject<HTMLElement | null>,
+  dependency?: unknown
+): PageOverflow {
   const [overflow, setOverflow] = useState<PageOverflow>({
     percentage: 0,
     overflowPixels: 0,
@@ -23,44 +26,48 @@ export function usePageOverflow(ref: RefObject<HTMLElement | null>): PageOverflo
   useEffect(() => {
     const element = ref.current
     if (!element) return
+    let frameId = 0
 
     const update = () => {
-      const height = element.scrollHeight
-      const visibleHeight = element.clientHeight || height
-      const rawPercentage = visibleHeight > 0 ? (height / visibleHeight) * 100 : 0
-      const overflowPixels = Math.max(0, height - visibleHeight)
-      const overflowing = overflowPixels > OVERFLOW_TOLERANCE_PX
-      const percentage = Math.round(overflowing ? rawPercentage : Math.min(rawPercentage, 100))
-      const status = overflowing
-        ? "overflow"
-        : percentage >= NEAR_LIMIT_PERCENTAGE
-          ? "near"
-          : "ok"
+      window.cancelAnimationFrame(frameId)
+      frameId = window.requestAnimationFrame(() => {
+        const height = element.scrollHeight
+        const visibleHeight = element.clientHeight || height
+        const rawPercentage = visibleHeight > 0 ? (height / visibleHeight) * 100 : 0
+        const overflowPixels = Math.max(0, height - visibleHeight)
+        const overflowing = overflowPixels > OVERFLOW_TOLERANCE_PX
+        const percentage = Math.round(overflowing ? rawPercentage : Math.min(rawPercentage, 100))
+        const status = overflowing
+          ? "overflow"
+          : percentage >= NEAR_LIMIT_PERCENTAGE
+            ? "near"
+            : "ok"
 
-      setOverflow({ percentage, overflowPixels, overflowing, status })
+        setOverflow((current) => {
+          if (
+            current.percentage === percentage &&
+            current.overflowPixels === overflowPixels &&
+            current.overflowing === overflowing &&
+            current.status === status
+          ) {
+            return current
+          }
+
+          return { percentage, overflowPixels, overflowing, status }
+        })
+      })
     }
 
     update()
 
     const resizeObserver = new ResizeObserver(update)
     resizeObserver.observe(element)
-    Array.from(element.children).forEach((child) => resizeObserver.observe(child))
-
-    const mutationObserver = new MutationObserver(() => {
-      Array.from(element.children).forEach((child) => resizeObserver.observe(child))
-      update()
-    })
-    mutationObserver.observe(element, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-    })
 
     return () => {
+      window.cancelAnimationFrame(frameId)
       resizeObserver.disconnect()
-      mutationObserver.disconnect()
     }
-  }, [ref])
+  }, [dependency, ref])
 
   return overflow
 }

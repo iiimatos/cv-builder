@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useDeferredValue, useEffect, useRef } from "react"
 import {
   CheckCircle2,
   Clock3,
   FileDown,
   Loader2,
   RotateCcw,
+  Save,
   TriangleAlert,
 } from "lucide-react"
 
@@ -19,10 +20,10 @@ import { PersonalForm } from "@/components/editor/personal-form"
 import { ProjectsForm } from "@/components/editor/projects-form"
 import { SkillsForm } from "@/components/editor/skills-form"
 import { SummaryForm } from "@/components/editor/summary-form"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useDebouncedCVSave } from "@/hooks/use-debounced-cv-save"
 import { usePageOverflow } from "@/hooks/use-page-overflow"
+import { cn } from "@/lib/utils"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 
 function SaveStatus() {
@@ -97,17 +98,6 @@ function EditorNavigation() {
   )
 }
 
-function downloadBlob(blob: Blob, fileName: string) {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement("a")
-  link.href = url
-  link.download = fileName
-  document.body.append(link)
-  link.click()
-  link.remove()
-  URL.revokeObjectURL(url)
-}
-
 function OverflowMeter({
   percentage,
   overflowPixels,
@@ -159,10 +149,11 @@ function OverflowMeter({
 
 function PreviewPanel() {
   const data = useCVEditorStore((state) => state.data)
+  const deferredData = useDeferredValue(data)
   const pageRef = useRef<HTMLElement | null>(null)
-  const overflow = usePageOverflow(pageRef)
+  const overflow = usePageOverflow(pageRef, deferredData)
 
-  if (!data) return null
+  if (!deferredData) return null
 
   return (
     <aside className="border-l bg-zinc-100 lg:h-[calc(100vh-57px)] lg:overflow-auto">
@@ -171,7 +162,7 @@ function PreviewPanel() {
       </div>
       <div className="px-4 pb-8 pt-8">
         <div className="origin-top scale-[0.42] sm:scale-[0.5] lg:scale-[0.42] xl:scale-[0.5] 2xl:scale-[0.62]">
-          <IvanClassicTemplate data={data} pageRef={pageRef} />
+          <IvanClassicTemplate data={deferredData} pageRef={pageRef} />
         </div>
       </div>
     </aside>
@@ -197,41 +188,14 @@ export function CVEditor() {
   const data = useCVEditorStore((state) => state.data)
   const dirty = useCVEditorStore((state) => state.dirty)
   const loading = useCVEditorStore((state) => state.loading)
+  const saving = useCVEditorStore((state) => state.saving)
   const loadCV = useCVEditorStore((state) => state.loadCV)
   const saveCV = useCVEditorStore((state) => state.saveCV)
   const resetChanges = useCVEditorStore((state) => state.resetChanges)
-  const [downloadingPdf, setDownloadingPdf] = useState(false)
-  const [pdfError, setPdfError] = useState<string | null>(null)
-
-  useDebouncedCVSave()
 
   useEffect(() => {
     void loadCV()
   }, [loadCV])
-
-  const downloadPdf = async () => {
-    setDownloadingPdf(true)
-    setPdfError(null)
-
-    try {
-      if (dirty) {
-        await saveCV()
-      }
-
-      const response = await fetch("/api/pdf", { cache: "no-store" })
-
-      if (!response.ok) {
-        throw new Error("No se pudo generar el PDF.")
-      }
-
-      const blob = await response.blob()
-      downloadBlob(blob, "ivan-matos-cv.pdf")
-    } catch (error) {
-      setPdfError(error instanceof Error ? error.message : "No se pudo generar el PDF.")
-    } finally {
-      setDownloadingPdf(false)
-    }
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -244,26 +208,38 @@ export function CVEditor() {
         </div>
         <div className="flex items-center gap-3">
           <SaveStatus />
-          <Button type="button" onClick={downloadPdf} disabled={!data || downloadingPdf}>
-            {downloadingPdf ? (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => void saveCV()}
+            disabled={!data || !dirty || saving}
+          >
+            {saving ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
-              <FileDown className="size-4" />
+              <Save className="size-4" />
             )}
-            Descargar PDF
+            {saving ? "Guardando..." : "Guardar"}
           </Button>
+          <a
+            href="/api/pdf"
+            download="ivan-matos-cv.pdf"
+            aria-disabled={!data || dirty}
+            className={cn(
+              buttonVariants(),
+              (!data || dirty) && "pointer-events-none opacity-50"
+            )}
+            title={dirty ? "Espera a que el CV termine de guardarse antes de exportar." : undefined}
+          >
+            <FileDown className="size-4" />
+            Descargar PDF
+          </a>
           <Button type="button" variant="outline" onClick={resetChanges} disabled={!data}>
             <RotateCcw className="size-4" />
             Restablecer
           </Button>
         </div>
       </header>
-      {pdfError ? (
-        <div className="border-b bg-destructive/10 px-4 py-2 text-sm text-destructive md:px-6">
-          {pdfError}
-        </div>
-      ) : null}
-
       {loading || !data ? (
         <main className="grid min-h-[calc(100vh-57px)] place-items-center">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

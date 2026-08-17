@@ -1,38 +1,33 @@
-import { chromium } from "playwright"
+import { existsSync } from "node:fs"
+import { join } from "node:path"
+import { createElement } from "react"
+import { renderToBuffer } from "@react-pdf/renderer"
+import type { DocumentProps } from "@react-pdf/renderer"
+import type { ReactElement } from "react"
+
+import { IvanClassicPDFDocument } from "@/components/cv/ivan-classic-pdf-document"
+import { getCVData } from "@/lib/cv-repository"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-export async function GET(request: Request) {
-  let browser: Awaited<ReturnType<typeof chromium.launch>> | null = null
+function getPublicPhotoPath(photo?: string) {
+  const photoPath = photo?.split("?")[0]
+  if (!photoPath?.startsWith("/")) return undefined
 
+  const publicPath = join(process.cwd(), "public", photoPath)
+
+  return existsSync(publicPath) ? publicPath : undefined
+}
+
+export async function GET() {
   try {
-    const origin = new URL(request.url).origin
-
-    browser = await chromium.launch({ headless: true })
-    const page = await browser.newPage({
-      viewport: {
-        width: 794,
-        height: 1123,
-      },
-      deviceScaleFactor: 1,
-    })
-
-    await page.goto(`${origin}/cv/print`, {
-      waitUntil: "networkidle",
-    })
-    await page.emulateMedia({ media: "print" })
-
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-      },
-    })
+    const data = await getCVData()
+    const document = createElement(IvanClassicPDFDocument, {
+      data,
+      photoPath: getPublicPhotoPath(data.personal.photo),
+    }) as unknown as ReactElement<DocumentProps>
+    const pdf = await renderToBuffer(document)
 
     return new Response(new Uint8Array(pdf), {
       headers: {
@@ -47,7 +42,5 @@ export async function GET(request: Request) {
       { error: "No se pudo generar el PDF." },
       { status: 500 }
     )
-  } finally {
-    await browser?.close()
   }
 }

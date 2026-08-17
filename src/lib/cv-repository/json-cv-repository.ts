@@ -5,7 +5,7 @@ import { cvDataSchema } from "@/schemas/cv-schema"
 import type { CVData } from "@/types/cv"
 import type { CVRepository } from "./types"
 
-const CV_FILE_PATH = path.join(process.cwd(), "src", "data", "cv.json")
+const CV_FILE_PATH = path.join(process.cwd(), "data", "cv.json")
 const CV_TEMP_FILE_PATH = `${CV_FILE_PATH}.tmp`
 
 export class JsonCVRepository implements CVRepository {
