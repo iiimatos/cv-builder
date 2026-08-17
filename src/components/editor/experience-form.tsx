@@ -32,13 +32,6 @@ function toLines(value: string) {
     .filter(Boolean)
 }
 
-function toCommaList(value: string) {
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean)
-}
-
 interface SortableExperienceProps {
   item: ExperienceItem
 }
@@ -158,10 +151,13 @@ function SortableExperience({ item }: SortableExperienceProps) {
 
       <label className="mt-3 block space-y-1.5">
         <span className="text-sm font-medium">Tecnologías</span>
-        <Input
-          value={item.technologies.join(", ")}
+        <span className="block text-xs text-muted-foreground">
+          Una tecnología por línea. Puedes usar comas dentro de cada entrada.
+        </span>
+        <Textarea
+          value={item.technologies.join("\n")}
           onChange={(event) =>
-            updateExperience(item.id, { technologies: toCommaList(event.target.value) })
+            updateExperience(item.id, { technologies: toLines(event.target.value) })
           }
         />
       </label>

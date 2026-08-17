@@ -15,13 +15,6 @@ function toLines(value: string) {
     .filter(Boolean)
 }
 
-function toCommaList(value: string) {
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean)
-}
-
 export function ProjectsForm() {
   const projects = useCVEditorStore((state) => state.data?.projects ?? [])
   const addProject = useCVEditorStore((state) => state.addProject)
@@ -87,10 +80,13 @@ export function ProjectsForm() {
             </label>
             <label className="block space-y-1.5">
               <span className="text-sm font-medium">Tecnologías</span>
-              <Input
-                value={item.technologies.join(", ")}
+              <span className="block text-xs text-muted-foreground">
+                Una tecnología por línea. Puedes usar comas dentro de cada entrada.
+              </span>
+              <Textarea
+                value={item.technologies.join("\n")}
                 onChange={(event) =>
-                  updateProject(item.id, { technologies: toCommaList(event.target.value) })
+                  updateProject(item.id, { technologies: toLines(event.target.value) })
                 }
               />
             </label>

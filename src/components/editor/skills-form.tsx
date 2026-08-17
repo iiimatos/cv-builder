@@ -5,12 +5,13 @@ import { Plus, Trash2 } from "lucide-react"
 import { SortableEditorList } from "@/components/editor/sortable-editor-list"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 
-function toCommaList(value: string) {
+function toLines(value: string) {
   return value
-    .split(",")
-    .map((item) => item.trim())
+    .split("\n")
+    .map((line) => line.trim())
     .filter(Boolean)
 }
 
@@ -52,12 +53,15 @@ export function SkillsForm() {
             </label>
             <label className="block space-y-1.5">
               <span className="text-sm font-medium">Habilidades</span>
-              <Input
-                value={item.skills.join(", ")}
+              <span className="block text-xs text-muted-foreground">
+                Una habilidad por línea. Puedes usar comas dentro de cada habilidad.
+              </span>
+              <Textarea
+                value={item.skills.join("\n")}
                 onChange={(event) =>
-                  updateSkillCategory(item.id, { skills: toCommaList(event.target.value) })
+                  updateSkillCategory(item.id, { skills: toLines(event.target.value) })
                 }
-                placeholder="React, Next.js, TypeScript"
+                placeholder={"React\nNext.js\nTypeScript"}
               />
             </label>
             <Button

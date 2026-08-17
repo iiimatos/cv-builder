@@ -23,28 +23,6 @@
   "summary": "Ingeniero de Software Full Stack con más de 4 años de experiencia en el desarrollo de soluciones empresariales y plataformas web para los sectores **financiero, gubernamental y privado**. Especializado en **TypeScript, React, Next.js y NestJS**, con experiencia en **arquitectura de software, APIs REST, bases de datos, integraciones empresariales y Cloud & DevOps**. Orientado a construir soluciones **escalables, seguras y mantenibles**, aplicando buenas prácticas de desarrollo y alineando la tecnología con las necesidades del negocio.",
   "experience": [
     {
-      "id": "exp-united-capital",
-      "company": "United Capital Puesto de Bolsa, S.A.",
-      "position": "Ingeniero de software",
-      "location": "Santo Domingo, República Dominicana",
-      "startDate": "Abril 2024",
-      "endDate": "",
-      "current": true,
-      "description": "Desarrollo de **plataformas internas** y mejora de **flujos de trabajo** para operaciones financieras.",
-      "bullets": [
-        "Desarrollo y mantenimiento de funcionalidades **full stack** con **React, Next.js y APIs backend**.",
-        "Colaboración con equipos de negocio para convertir **necesidades operativas** en herramientas confiables.",
-        "Mejora de la calidad de entrega mediante **contratos tipados**, **UI reutilizable** y prácticas **CI/CD**."
-      ],
-      "technologies": [
-        "React",
-        "Next.js",
-        "TypeScript",
-        "Node.js",
-        "Azure"
-      ]
-    },
-    {
       "id": "exp-liga-municipal",
       "company": "Liga Municipal Dominicana",
       "position": "Desarrollador Full Stack",
@@ -52,18 +30,47 @@
       "startDate": "Septiembre 2022",
       "endDate": "Abril 2024",
       "current": false,
-      "description": "Desarrollo de sistemas para el **sector público** y mantenimiento de **aplicaciones críticas** para el negocio.",
+      "description": "Desarrollo de **soluciones de software para el sector público**, participando en sistemas orientados a la **gestión municipal y automatización de procesos internos**.",
       "bullets": [
-        "Implementación de módulos para **flujos administrativos** y de **reportes**.",
-        "Integración de **APIs REST** y mejora de experiencias de captura de datos para usuarios internos.",
-        "Soporte a **despliegues** y mantenimiento en entornos de aplicaciones web."
+        "Desarrollo backend con C# y .NET para plataforma enfocada en la gestión integral de ayuntamientos.",
+        "Desarrollo full stack con Next.js de DocuTracker, sistema para el seguimiento y transferencia de documentos entre departamentos."
       ],
       "technologies": [
-        "React",
+        "C#",
         ".NET",
+        "Next.js",
+        "React",
         "SQL Server",
-        "REST APIs",
-        "GitLab CI/CD"
+        "REST APIs"
+      ]
+    },
+    {
+      "id": "exp-united-capital",
+      "company": "United Capital Puesto de Bolsa, S.A.",
+      "position": "Ingeniero de software",
+      "location": "Santo Domingo, República Dominicana",
+      "startDate": "Abril 2024",
+      "endDate": "",
+      "current": true,
+      "description": "Desarrollo y evolución de plataformas empresariales y soluciones financieras, participando en el diseño de arquitectura, automatización de procesos, integraciones corporativas y construcción de aplicaciones full stack orientadas a operaciones internas y clientes.",
+      "bullets": [
+        "Desarrollo de aplicaciones **full stack** con **React, Next.js, TypeScript y NestJS**, aplicando **arquitectura modular y buenas prácticas** para plataformas y procesos financieros.",
+        "Desarrollo de soluciones para **onboarding, gestión de clientes, inversiones y flujos de aprobación**.",
+        "Implementación de **auditoría, trazabilidad, procesos asíncronos, notificaciones y controles de cumplimiento**."
+      ],
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Next.js",
+        "NestJS",
+        "Node.js",
+        "SQL Server",
+        "TypeORM",
+        "Docker",
+        "Azure DevOps",
+        "Dynamics 365",
+        "SharePoint",
+        "REST APIs"
       ]
     }
   ],
@@ -71,17 +78,17 @@
     {
       "id": "edu-software",
       "institution": "Instituto Tecnológico de las Americas",
-      "degree": "Tecnologo en Desarrollo de Software",
-      "startDate": "2018",
-      "endDate": "2020",
+      "degree": "Tecnólogo en Desarrollo de Software",
+      "startDate": "Septiembre 2018",
+      "endDate": "Agosto 2020",
       "description": ""
     },
     {
       "id": "ba17a731-54eb-4dae-95f1-20f5ba045932",
       "institution": "Universidad Domínico Americano",
       "degree": "Ingeniería de Software",
-      "startDate": "2021",
-      "endDate": "2026",
+      "startDate": "Septiembre 2021",
+      "endDate": "Agosto 2026",
       "description": ""
     }
   ],
@@ -105,7 +112,8 @@
         "NestJS",
         "Node.js",
         ".NET",
-        "REST APIs"
+        "REST APIs",
+        "Graphql"
       ]
     },
     {
