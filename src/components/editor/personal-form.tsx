@@ -1,9 +1,9 @@
 "use client"
 
 import type { ChangeEvent } from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import { Plus, Trash2 } from "lucide-react"
+import { ImagePlus, Plus, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,6 +34,8 @@ function createPersonalLink(): PersonalLink {
 export function PersonalForm() {
   const personal = useCVEditorStore((state) => state.data?.personal)
   const setPersonal = useCVEditorStore((state) => state.setPersonal)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
   const { register, reset } = useForm<PersonalInfo>({
     values: personal,
   })
@@ -58,6 +60,37 @@ export function PersonalForm() {
     setPersonal({ links: personal.links.filter((link) => link.id !== id) })
   }
 
+  const uploadPhoto = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setUploadingPhoto(true)
+    setPhotoError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append("photo", file)
+
+      const response = await fetch("/api/profile-photo", {
+        method: "POST",
+        body: formData,
+      })
+
+      const payload = (await response.json()) as { photo?: string; error?: string }
+
+      if (!response.ok || !payload.photo) {
+        throw new Error(payload.error ?? "No se pudo subir la foto.")
+      }
+
+      setPersonal({ photo: payload.photo })
+    } catch (error) {
+      setPhotoError(error instanceof Error ? error.message : "No se pudo subir la foto.")
+    } finally {
+      setUploadingPhoto(false)
+      event.target.value = ""
+    }
+  }
+
   return (
     <section id="informacion" className="scroll-mt-20 space-y-4">
       <div>
@@ -80,6 +113,41 @@ export function PersonalForm() {
             />
           </label>
         ))}
+      </div>
+
+      <div className="space-y-3 rounded-lg border p-3">
+        <div>
+          <h3 className="text-base font-semibold">Foto</h3>
+          <p className="text-sm text-muted-foreground">
+            Se guarda localmente dentro de public/profile.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-input bg-background px-2.5 text-sm font-medium hover:bg-muted">
+            <ImagePlus className="size-4" />
+            {uploadingPhoto ? "Subiendo..." : "Subir foto"}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              disabled={uploadingPhoto}
+              onChange={uploadPhoto}
+            />
+          </label>
+          {personal.photo ? (
+            <>
+              <span className="max-w-sm truncate text-sm text-muted-foreground">
+                {personal.photo}
+              </span>
+              <Button type="button" variant="outline" size="sm" onClick={() => setPersonal({ photo: "" })}>
+                Quitar
+              </Button>
+            </>
+          ) : (
+            <span className="text-sm text-muted-foreground">Sin foto cargada</span>
+          )}
+        </div>
+        {photoError ? <p className="text-sm text-destructive">{photoError}</p> : null}
       </div>
 
       <div className="space-y-3">

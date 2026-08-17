@@ -18,7 +18,7 @@
       }
     ],
     "location": "Santo Domingo, República Dominicana",
-    "photo": "/profile/profile.jpg"
+    "photo": ""
   },
   "summary": "Ingeniero de Software Full Stack con más de 4 años de experiencia desarrollando aplicaciones empresariales y plataformas web para los sectores financiero, gubernamental y privado. Especializado en TypeScript, React, Next.js y NestJS, con experiencia en diseño de APIs REST, SQL Server, integraciones empresariales, Docker, Azure DevOps y CI/CD. Enfocado en arquitectura mantenible, automatización de procesos, seguridad y buenas prácticas de desarrollo.",
   "experience": [
@@ -70,11 +70,19 @@
   "education": [
     {
       "id": "edu-software",
-      "institution": "Instituto Tecnológico de Santo Domingo",
-      "degree": "Formación en Ingeniería de Software",
+      "institution": "Instituto Tecnológico de las Americas",
+      "degree": "Tecnologo en Desarrollo de Software",
       "startDate": "2018",
-      "endDate": "2022",
-      "description": "Base académica en desarrollo de software, bases de datos y diseño de sistemas."
+      "endDate": "2020",
+      "description": ""
+    },
+    {
+      "id": "ba17a731-54eb-4dae-95f1-20f5ba045932",
+      "institution": "Universidad Domínico Americano",
+      "degree": "Ingeniería de Software",
+      "startDate": "2021",
+      "endDate": "2026",
+      "description": ""
     }
   ],
   "skills": [
@@ -142,6 +150,6 @@
     "showPhoto": true,
     "showLocation": true,
     "showLinks": true,
-    "showProjects": true
+    "showProjects": false
   }
 }

@@ -3,7 +3,16 @@
 import { arrayMove } from "@dnd-kit/sortable"
 import { create } from "zustand"
 
-import type { CVData, ExperienceItem, PersonalInfo } from "@/types/cv"
+import type {
+  CVData,
+  CVSettings,
+  EducationItem,
+  ExperienceItem,
+  LanguageItem,
+  PersonalInfo,
+  ProjectItem,
+  SkillCategory,
+} from "@/types/cv"
 
 type SaveStatus = "idle" | "editing" | "saving" | "saved" | "error"
 
@@ -22,6 +31,23 @@ interface CVEditorState {
   updateExperience: (id: string, updates: Partial<ExperienceItem>) => void
   removeExperience: (id: string) => void
   reorderExperience: (activeId: string, overId: string) => void
+  addEducation: () => void
+  updateEducation: (id: string, updates: Partial<EducationItem>) => void
+  removeEducation: (id: string) => void
+  reorderEducation: (activeId: string, overId: string) => void
+  addSkillCategory: () => void
+  updateSkillCategory: (id: string, updates: Partial<SkillCategory>) => void
+  removeSkillCategory: (id: string) => void
+  reorderSkillCategory: (activeId: string, overId: string) => void
+  addLanguage: () => void
+  updateLanguage: (id: string, updates: Partial<LanguageItem>) => void
+  removeLanguage: (id: string) => void
+  reorderLanguage: (activeId: string, overId: string) => void
+  addProject: () => void
+  updateProject: (id: string, updates: Partial<ProjectItem>) => void
+  removeProject: (id: string) => void
+  reorderProject: (activeId: string, overId: string) => void
+  updateSettings: (settings: Partial<CVSettings>) => void
   saveCV: () => Promise<void>
   resetChanges: () => void
 }
@@ -41,6 +67,44 @@ function createExperience(): ExperienceItem {
   }
 }
 
+function createEducation(): EducationItem {
+  return {
+    id: crypto.randomUUID(),
+    institution: "Nueva institución",
+    degree: "Nueva formación",
+    startDate: "",
+    endDate: "",
+    description: "",
+  }
+}
+
+function createSkillCategory(): SkillCategory {
+  return {
+    id: crypto.randomUUID(),
+    name: "Nueva categoría",
+    skills: [],
+  }
+}
+
+function createLanguage(): LanguageItem {
+  return {
+    id: crypto.randomUUID(),
+    language: "Nuevo idioma",
+    level: "",
+  }
+}
+
+function createProject(): ProjectItem {
+  return {
+    id: crypto.randomUUID(),
+    name: "Nuevo proyecto",
+    description: "",
+    url: "",
+    technologies: [],
+    bullets: [],
+  }
+}
+
 function replaceExperience(
   data: CVData,
   id: string,
@@ -50,6 +114,25 @@ function replaceExperience(
     ...data,
     experience: data.experience.map((item) => (item.id === id ? updater(item) : item)),
   }
+}
+
+function updateCollection<T extends { id: string }>(
+  items: T[],
+  id: string,
+  updates: Partial<T>
+) {
+  return items.map((item) => (item.id === id ? { ...item, ...updates } : item))
+}
+
+function reorderCollection<T extends { id: string }>(items: T[], activeId: string, overId: string) {
+  if (activeId === overId) return items
+
+  const oldIndex = items.findIndex((item) => item.id === activeId)
+  const newIndex = items.findIndex((item) => item.id === overId)
+
+  if (oldIndex === -1 || newIndex === -1) return items
+
+  return arrayMove(items, oldIndex, newIndex)
 }
 
 export const useCVEditorStore = create<CVEditorState>((set, get) => ({
@@ -150,6 +233,197 @@ export const useCVEditorStore = create<CVEditorState>((set, get) => ({
 
     set({
       data: { ...data, experience: arrayMove(data.experience, oldIndex, newIndex) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  addEducation() {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, education: [...data.education, createEducation()] },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  updateEducation(id, updates) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, education: updateCollection(data.education, id, updates) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  removeEducation(id) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, education: data.education.filter((item) => item.id !== id) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  reorderEducation(activeId, overId) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, education: reorderCollection(data.education, activeId, overId) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  addSkillCategory() {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, skills: [...data.skills, createSkillCategory()] },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  updateSkillCategory(id, updates) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, skills: updateCollection(data.skills, id, updates) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  removeSkillCategory(id) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, skills: data.skills.filter((item) => item.id !== id) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  reorderSkillCategory(activeId, overId) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, skills: reorderCollection(data.skills, activeId, overId) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  addLanguage() {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, languages: [...data.languages, createLanguage()] },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  updateLanguage(id, updates) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, languages: updateCollection(data.languages, id, updates) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  removeLanguage(id) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, languages: data.languages.filter((item) => item.id !== id) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  reorderLanguage(activeId, overId) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, languages: reorderCollection(data.languages, activeId, overId) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  addProject() {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: {
+        ...data,
+        projects: [...data.projects, createProject()],
+        settings: { ...data.settings, showProjects: true },
+      },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  updateProject(id, updates) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, projects: updateCollection(data.projects, id, updates) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  removeProject(id) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, projects: data.projects.filter((item) => item.id !== id) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  reorderProject(activeId, overId) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, projects: reorderCollection(data.projects, activeId, overId) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  updateSettings(settings) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, settings: { ...data.settings, ...settings } },
       dirty: true,
       status: "editing",
     })

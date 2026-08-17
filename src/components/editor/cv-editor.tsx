@@ -4,8 +4,13 @@ import { useEffect, useRef } from "react"
 import { CheckCircle2, Clock3, Loader2, RotateCcw, TriangleAlert } from "lucide-react"
 
 import { IvanClassicTemplate } from "@/components/cv/ivan-classic-template"
+import { DesignForm } from "@/components/editor/design-form"
+import { EducationForm } from "@/components/editor/education-form"
 import { ExperienceForm } from "@/components/editor/experience-form"
+import { LanguagesForm } from "@/components/editor/languages-form"
 import { PersonalForm } from "@/components/editor/personal-form"
+import { ProjectsForm } from "@/components/editor/projects-form"
+import { SkillsForm } from "@/components/editor/skills-form"
 import { SummaryForm } from "@/components/editor/summary-form"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -60,6 +65,11 @@ function EditorNavigation() {
     { label: "Información", target: "informacion" },
     { label: "Perfil", target: "perfil" },
     { label: "Experiencia", target: "experiencia" },
+    { label: "Educación", target: "educacion" },
+    { label: "Habilidades", target: "habilidades" },
+    { label: "Idiomas", target: "idiomas" },
+    { label: "Proyectos", target: "proyectos" },
+    { label: "Diseño", target: "diseno" },
   ]
 
   return (
@@ -156,6 +166,11 @@ function EditorForms() {
       <PersonalForm />
       <SummaryForm />
       <ExperienceForm />
+      <EducationForm />
+      <SkillsForm />
+      <LanguagesForm />
+      <ProjectsForm />
+      <DesignForm />
     </div>
   )
 }

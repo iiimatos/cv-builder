@@ -1,4 +1,5 @@
 import type { ReactNode, RefObject } from "react"
+import Image from "next/image"
 import { Globe2, LinkIcon, Mail, MapPin, Phone } from "lucide-react"
 
 import { A4Page } from "@/components/cv/a4-page"
@@ -101,9 +102,19 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
 
             {data.settings.showPhoto ? (
               <div className="flex justify-start md:justify-end">
-                <div className="grid size-20 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                  Foto
-                </div>
+                {data.personal.photo ? (
+                  <Image
+                    src={data.personal.photo}
+                    alt={`Foto de ${data.personal.firstName} ${data.personal.lastName}`}
+                    width={80}
+                    height={80}
+                    className="size-20 rounded-lg border border-zinc-200 object-cover"
+                  />
+                ) : (
+                  <div className="grid size-20 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                    Foto
+                  </div>
+                )}
               </div>
             ) : null}
           </div>
@@ -131,6 +142,34 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
             {data.summary.trim() ? (
               <Section title="Resumen profesional" dense={dense}>
                 <p className={cn(bodyText, "text-zinc-700")}>{data.summary}</p>
+              </Section>
+            ) : null}
+
+            {data.settings.showProjects && data.projects.length > 0 ? (
+              <Section title="Proyectos" dense={dense}>
+                <div className={dense ? "space-y-3" : "space-y-4"}>
+                  {data.projects.map((project) => (
+                    <article key={project.id} className="space-y-2">
+                      <div className="flex items-start justify-between gap-4">
+                        <h3 className="text-[13px] font-bold text-zinc-950">{project.name}</h3>
+                        {project.url ? (
+                          <Globe2 className="mt-0.5 size-3.5 shrink-0 text-zinc-500" />
+                        ) : null}
+                      </div>
+                      {project.description ? (
+                        <p className={cn(bodyText, "text-zinc-700")}>{project.description}</p>
+                      ) : null}
+                      {project.bullets.length > 0 ? (
+                        <ul className={cn("list-disc pl-4 text-zinc-700", bodyText)}>
+                          {project.bullets.filter(Boolean).map((bullet) => (
+                            <li key={bullet}>{bullet}</li>
+                          ))}
+                        </ul>
+                      ) : null}
+                      <ChipList items={project.technologies} dense={dense} />
+                    </article>
+                  ))}
+                </div>
               </Section>
             ) : null}
 
@@ -177,26 +216,6 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
               </div>
             </Section>
 
-            {data.settings.showProjects && data.projects.length > 0 ? (
-              <Section title="Proyectos" dense={dense}>
-                <div className={dense ? "space-y-3" : "space-y-4"}>
-                  {data.projects.map((project) => (
-                    <article key={project.id} className="space-y-2">
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="text-[13px] font-bold text-zinc-950">{project.name}</h3>
-                        {project.url ? (
-                          <Globe2 className="mt-0.5 size-3.5 shrink-0 text-zinc-500" />
-                        ) : null}
-                      </div>
-                      {project.description ? (
-                        <p className={cn(bodyText, "text-zinc-700")}>{project.description}</p>
-                      ) : null}
-                      <ChipList items={project.technologies} dense={dense} />
-                    </article>
-                  ))}
-                </div>
-              </Section>
-            ) : null}
           </div>
 
           <aside className={cn("border-l border-zinc-200 pl-5", dense ? "space-y-4" : "space-y-5")}>
