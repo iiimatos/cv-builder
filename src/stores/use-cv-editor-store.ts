@@ -55,8 +55,8 @@ interface CVEditorState {
 function createExperience(): ExperienceItem {
   return {
     id: crypto.randomUUID(),
-    company: "Nueva empresa",
-    position: "Nuevo puesto",
+    company: "",
+    position: "",
     location: "",
     startDate: "",
     endDate: "",
@@ -70,8 +70,8 @@ function createExperience(): ExperienceItem {
 function createEducation(): EducationItem {
   return {
     id: crypto.randomUUID(),
-    institution: "Nueva institución",
-    degree: "Nueva formación",
+    institution: "",
+    degree: "",
     startDate: "",
     endDate: "",
     description: "",
@@ -81,7 +81,7 @@ function createEducation(): EducationItem {
 function createSkillCategory(): SkillCategory {
   return {
     id: crypto.randomUUID(),
-    name: "Nueva categoría",
+    name: "",
     skills: [],
   }
 }
@@ -89,7 +89,7 @@ function createSkillCategory(): SkillCategory {
 function createLanguage(): LanguageItem {
   return {
     id: crypto.randomUUID(),
-    language: "Nuevo idioma",
+    language: "",
     level: "",
   }
 }
@@ -97,7 +97,7 @@ function createLanguage(): LanguageItem {
 function createProject(): ProjectItem {
   return {
     id: crypto.randomUUID(),
-    name: "Nuevo proyecto",
+    name: "",
     description: "",
     url: "",
     technologies: [],

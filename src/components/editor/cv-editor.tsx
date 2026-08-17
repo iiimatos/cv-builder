@@ -1,7 +1,14 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { CheckCircle2, Clock3, Loader2, RotateCcw, TriangleAlert } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import {
+  CheckCircle2,
+  Clock3,
+  FileDown,
+  Loader2,
+  RotateCcw,
+  TriangleAlert,
+} from "lucide-react"
 
 import { IvanClassicTemplate } from "@/components/cv/ivan-classic-template"
 import { DesignForm } from "@/components/editor/design-form"
@@ -88,6 +95,17 @@ function EditorNavigation() {
       </div>
     </nav>
   )
+}
+
+function downloadBlob(blob: Blob, fileName: string) {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = fileName
+  document.body.append(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }
 
 function OverflowMeter({
@@ -177,15 +195,43 @@ function EditorForms() {
 
 export function CVEditor() {
   const data = useCVEditorStore((state) => state.data)
+  const dirty = useCVEditorStore((state) => state.dirty)
   const loading = useCVEditorStore((state) => state.loading)
   const loadCV = useCVEditorStore((state) => state.loadCV)
+  const saveCV = useCVEditorStore((state) => state.saveCV)
   const resetChanges = useCVEditorStore((state) => state.resetChanges)
+  const [downloadingPdf, setDownloadingPdf] = useState(false)
+  const [pdfError, setPdfError] = useState<string | null>(null)
 
   useDebouncedCVSave()
 
   useEffect(() => {
     void loadCV()
   }, [loadCV])
+
+  const downloadPdf = async () => {
+    setDownloadingPdf(true)
+    setPdfError(null)
+
+    try {
+      if (dirty) {
+        await saveCV()
+      }
+
+      const response = await fetch("/api/pdf", { cache: "no-store" })
+
+      if (!response.ok) {
+        throw new Error("No se pudo generar el PDF.")
+      }
+
+      const blob = await response.blob()
+      downloadBlob(blob, "ivan-matos-cv.pdf")
+    } catch (error) {
+      setPdfError(error instanceof Error ? error.message : "No se pudo generar el PDF.")
+    } finally {
+      setDownloadingPdf(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -198,12 +244,25 @@ export function CVEditor() {
         </div>
         <div className="flex items-center gap-3">
           <SaveStatus />
+          <Button type="button" onClick={downloadPdf} disabled={!data || downloadingPdf}>
+            {downloadingPdf ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <FileDown className="size-4" />
+            )}
+            Descargar PDF
+          </Button>
           <Button type="button" variant="outline" onClick={resetChanges} disabled={!data}>
             <RotateCcw className="size-4" />
             Restablecer
           </Button>
         </div>
       </header>
+      {pdfError ? (
+        <div className="border-b bg-destructive/10 px-4 py-2 text-sm text-destructive md:px-6">
+          {pdfError}
+        </div>
+      ) : null}
 
       {loading || !data ? (
         <main className="grid min-h-[calc(100vh-57px)] place-items-center">
