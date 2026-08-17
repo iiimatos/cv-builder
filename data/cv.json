@@ -145,7 +145,7 @@
   ],
   "projects": [],
   "settings": {
-    "template": "ivan-classic",
+    "template": "classic",
     "fontSize": "large",
     "spacing": "compact",
     "showPhoto": true,

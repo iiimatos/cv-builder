@@ -1,4 +1,4 @@
-export type CVTemplate = "ivan-classic" | "ats" | "minimal"
+export type CVTemplate = "classic" | "ats" | "minimal"
 
 export interface CVSettings {
   template: CVTemplate

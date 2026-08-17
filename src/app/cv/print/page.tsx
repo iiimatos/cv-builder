@@ -1,4 +1,4 @@
-import { IvanClassicTemplate } from "@/components/cv/ivan-classic-template"
+import { IvanClassicTemplate } from "@/components/cv/classic-template"
 import { getCVData } from "@/lib/cv-repository"
 
 export const dynamic = "force-dynamic"

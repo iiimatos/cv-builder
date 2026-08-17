@@ -19,6 +19,21 @@ export function DesignForm() {
       </div>
 
       <div className="grid gap-4 rounded-lg border bg-background p-4 md:grid-cols-2">
+        <label className="space-y-1.5 md:col-span-2">
+          <span className="text-sm font-medium">Plantilla</span>
+          <select
+            value={settings.template}
+            onChange={(event) =>
+              updateSettings({ template: event.target.value as CVSettings["template"] })
+            }
+            className="h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm"
+          >
+            <option value="classic">Classic</option>
+            <option value="ats">ATS</option>
+            <option value="minimal">Minimal</option>
+          </select>
+        </label>
+
         <label className="space-y-1.5">
           <span className="text-sm font-medium">Tamaño de texto</span>
           <select

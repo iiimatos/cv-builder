@@ -5,7 +5,7 @@ import { renderToBuffer } from "@react-pdf/renderer"
 import type { DocumentProps } from "@react-pdf/renderer"
 import type { ReactElement } from "react"
 
-import { IvanClassicPDFDocument } from "@/components/cv/ivan-classic-pdf-document"
+import { CVPDFDocumentRenderer } from "@/components/cv/cv-pdf-document-renderer"
 import { getCVData } from "@/lib/cv-repository"
 
 export const runtime = "nodejs"
@@ -23,7 +23,7 @@ function getPublicPhotoPath(photo?: string) {
 export async function GET() {
   try {
     const data = await getCVData()
-    const document = createElement(IvanClassicPDFDocument, {
+    const document = createElement(CVPDFDocumentRenderer, {
       data,
       photoPath: getPublicPhotoPath(data.personal.photo),
     }) as unknown as ReactElement<DocumentProps>

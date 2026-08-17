@@ -334,7 +334,233 @@ function contacts(data: CVData) {
   ].filter((item): item is { label: string; value: string } => Boolean(item))
 }
 
+function AtsPDFPage({ data }: { data: CVData }) {
+  const contactLine = contacts(data).map((item) => item.value).join(" | ")
+
+  return (
+    <Page size="A4" style={styles.page}>
+      <View style={{ alignItems: "center", borderBottomWidth: 1, borderBottomColor: "#d4d4d8", paddingBottom: 14 }}>
+        <Text style={{ fontSize: 28, fontWeight: 700 }}>
+          {data.personal.firstName} {data.personal.lastName}
+        </Text>
+        <Text style={{ marginTop: 6, color: "#3f3f46", fontSize: 12, fontWeight: 700 }}>
+          {data.personal.professionalTitle}
+        </Text>
+        <Text style={{ marginTop: 8, color: "#52525b", fontSize: 8.5, lineHeight: 1.4, textAlign: "center" }}>
+          {contactLine}
+        </Text>
+      </View>
+
+      <View style={{ gap: 14, paddingTop: 18 }}>
+        {data.summary.trim() ? (
+          <Section title="Resumen profesional">
+            <MarkdownText style={styles.bodyText}>{data.summary}</MarkdownText>
+          </Section>
+        ) : null}
+
+        <Section title="Experiencia">
+          <View style={styles.itemGroup}>
+            {data.experience.map((item) => (
+              <View key={item.id} style={styles.itemNoBorder}>
+                <View style={styles.itemHeader}>
+                  <View>
+                    <Text style={styles.itemTitle}>{item.position}</Text>
+                    <Text style={styles.itemSubtitle}>{item.company}</Text>
+                    {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
+                  </View>
+                  <Text style={styles.date}>{dateRange(item.startDate, item.endDate, item.current)}</Text>
+                </View>
+                {item.description ? <MarkdownText style={styles.bodyText}>{item.description}</MarkdownText> : null}
+                <Bullets items={item.bullets} />
+                {item.technologies.length > 0 ? (
+                  <Text style={styles.smallText}>{item.technologies.join(" | ")}</Text>
+                ) : null}
+              </View>
+            ))}
+          </View>
+        </Section>
+
+        <View style={{ flexDirection: "row", gap: 24 }}>
+          <View style={{ flex: 1 }}>
+            <Section title="Educación">
+              {data.education.map((item) => (
+                <View key={item.id} style={styles.sideItem}>
+                  <Text style={styles.itemTitle}>{item.degree}</Text>
+                  <Text style={styles.smallText}>{item.institution}</Text>
+                  <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
+                </View>
+              ))}
+            </Section>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Section title="Habilidades">
+              {data.skills.map((category) => (
+                <Text key={category.id} style={styles.smallText}>
+                  <Text style={styles.bold}>{category.name}: </Text>
+                  {category.skills.join(", ")}
+                </Text>
+              ))}
+            </Section>
+          </View>
+        </View>
+      </View>
+    </Page>
+  )
+}
+
+function MinimalPDFPage({ data, photoPath }: IvanClassicPDFDocumentProps) {
+  const contactLine = contacts(data).map((item) => item.value).join(" | ")
+
+  return (
+    <Page
+      size="A4"
+      style={{
+        ...styles.page,
+        backgroundColor: "#fbfbfa",
+        paddingHorizontal: 36,
+        paddingVertical: 30,
+      }}
+    >
+      <View style={{ borderBottomWidth: 1.25, borderBottomColor: "#18181b", paddingBottom: 16 }}>
+        <View style={{ flexDirection: "row", gap: 28 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: "#71717a", fontSize: 8, fontWeight: 700, letterSpacing: 1.3, textTransform: "uppercase" }}>
+              Currículum
+            </Text>
+            <Text style={{ marginTop: 8, fontSize: 34, fontWeight: 700, lineHeight: 0.96 }}>
+              {data.personal.firstName} {data.personal.lastName}
+            </Text>
+          </View>
+          <View style={{ width: 170, justifyContent: "flex-end" }}>
+            {data.settings.showPhoto && photoPath ? (
+              // eslint-disable-next-line jsx-a11y/alt-text
+              <Image
+                src={photoPath}
+                style={{ alignSelf: "flex-end", width: 58, height: 68, objectFit: "cover", marginBottom: 10 }}
+              />
+            ) : null}
+            <Text style={{ color: "#27272a", fontSize: 11, fontWeight: 700, lineHeight: 1.35 }}>
+              {data.personal.professionalTitle}
+            </Text>
+            <Text style={{ marginTop: 8, color: "#52525b", fontSize: 7, lineHeight: 1.35 }}>
+              {contactLine}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={{ gap: 11, paddingTop: 14 }}>
+        {data.summary.trim() ? (
+          <View style={{ flexDirection: "row", gap: 18 }}>
+            <Text style={{ width: 42, color: "#a1a1aa", fontSize: 8, fontWeight: 700 }}>01</Text>
+            <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 7 }}>
+              <Text style={styles.sectionTitle}>Perfil</Text>
+              <View style={{ marginTop: 6 }}>
+                <MarkdownText style={styles.smallText}>{data.summary}</MarkdownText>
+              </View>
+            </View>
+          </View>
+        ) : null}
+
+        <View style={{ flexDirection: "row", gap: 18 }}>
+          <Text style={{ width: 42, color: "#a1a1aa", fontSize: 8, fontWeight: 700 }}>02</Text>
+          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 7 }}>
+            <Text style={styles.sectionTitle}>Experiencia</Text>
+            <View style={{ marginTop: 7 }}>
+              <View style={{ gap: 8 }}>
+                {data.experience.map((item) => (
+                  <View key={item.id} style={{ gap: 4 }}>
+                    <View style={styles.itemHeader}>
+                      <View>
+                        <Text style={styles.itemTitle}>{item.position}</Text>
+                        <Text style={styles.itemSubtitle}>{item.company}</Text>
+                        {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
+                      </View>
+                      <Text style={styles.date}>{dateRange(item.startDate, item.endDate, item.current)}</Text>
+                    </View>
+                    {item.description ? <MarkdownText style={styles.smallText}>{item.description}</MarkdownText> : null}
+                    <View>
+                      {item.bullets.filter(Boolean).map((bullet) => (
+                        <View key={bullet} style={{ flexDirection: "row", gap: 4, marginBottom: 2 }}>
+                          <Text style={{ width: 5, color: "#3f3f46", fontSize: 8, lineHeight: 1.3 }}>•</Text>
+                          <View style={{ flex: 1 }}>
+                            <MarkdownText style={{ color: "#3f3f46", fontSize: 8.5, lineHeight: 1.3 }}>
+                              {bullet}
+                            </MarkdownText>
+                          </View>
+                        </View>
+                      ))}
+                    </View>
+                    {item.technologies.length > 0 ? (
+                      <Text style={{ color: "#52525b", fontSize: 7.5, lineHeight: 1.3 }}>
+                        {item.technologies.join(" | ")}
+                      </Text>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", gap: 18 }}>
+          <Text style={{ width: 42, color: "#a1a1aa", fontSize: 8, fontWeight: 700 }}>03</Text>
+          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 7 }}>
+            <Text style={styles.sectionTitle}>Educación</Text>
+            <View style={{ marginTop: 6, flexDirection: "row", gap: 20 }}>
+              {data.education.map((item) => (
+                <View key={item.id} style={{ flex: 1 }}>
+                  <Text style={styles.itemTitle}>{item.degree}</Text>
+                  <Text style={styles.smallText}>{item.institution}</Text>
+                  <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", gap: 18 }}>
+          <Text style={{ width: 42, color: "#a1a1aa", fontSize: 8, fontWeight: 700 }}>04</Text>
+          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 7 }}>
+            <Text style={styles.sectionTitle}>Habilidades</Text>
+            <View style={{ marginTop: 6, gap: 3 }}>
+              {data.skills.map((category) => (
+                <Text key={category.id} style={styles.smallText}>
+                  <Text style={styles.bold}>{category.name}: </Text>
+                  {category.skills.join(", ")}
+                </Text>
+              ))}
+            </View>
+          </View>
+        </View>
+      </View>
+    </Page>
+  )
+}
+
 export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) {
+  if (data.settings.template === "ats") {
+    return (
+      <Document
+        title={`${data.personal.firstName} ${data.personal.lastName} CV`}
+        author={`${data.personal.firstName} ${data.personal.lastName}`}
+      >
+        <AtsPDFPage data={data} />
+      </Document>
+    )
+  }
+
+  if (data.settings.template === "minimal") {
+    return (
+      <Document
+        title={`${data.personal.firstName} ${data.personal.lastName} CV`}
+        author={`${data.personal.firstName} ${data.personal.lastName}`}
+      >
+        <MinimalPDFPage data={data} photoPath={photoPath} />
+      </Document>
+    )
+  }
+
   return (
     <Document
       title={`${data.personal.firstName} ${data.personal.lastName} CV`}

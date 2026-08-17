@@ -12,7 +12,7 @@ import {
   TriangleAlert,
 } from "lucide-react"
 
-import { IvanClassicTemplate } from "@/components/cv/ivan-classic-template"
+import { CVTemplateRenderer } from "@/components/cv/cv-template-renderer"
 import { DesignForm } from "@/components/editor/design-form"
 import { EducationForm } from "@/components/editor/education-form"
 import { ExperienceForm } from "@/components/editor/experience-form"
@@ -169,7 +169,7 @@ function PreviewPanel() {
       </div>
       <div className="px-4 pb-8 pt-8">
         <div className="origin-top scale-[0.42] sm:scale-[0.5] lg:scale-[0.42] xl:scale-[0.5] 2xl:scale-[0.62]">
-          <IvanClassicTemplate data={deferredData} pageRef={pageRef} />
+          <CVTemplateRenderer data={deferredData} pageRef={pageRef} />
         </div>
       </div>
     </aside>
