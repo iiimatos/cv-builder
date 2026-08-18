@@ -154,7 +154,7 @@
   "projects": [],
   "settings": {
     "template": "classic",
-    "fontSize": "large",
+    "fontSize": "compact",
     "spacing": "compact",
     "showPhoto": true,
     "showLocation": true,

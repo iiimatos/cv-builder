@@ -33,23 +33,14 @@ function Section({ title, children, className, dense = false }: SectionProps) {
   )
 }
 
-function ChipList({ items, dense = false }: { items: string[]; dense?: boolean }) {
-  if (items.length === 0) return null
+function InlineTagList({ items, dense = false }: { items: string[]; dense?: boolean }) {
+  const filtered = items.filter(Boolean)
+  if (filtered.length === 0) return null
 
   return (
-    <div className={cn("flex flex-wrap", dense ? "gap-1" : "gap-1.5")}>
-      {items.map((item) => (
-        <span
-          key={item}
-          className={cn(
-            "rounded-md border border-zinc-200 bg-zinc-50 font-medium text-zinc-700",
-            dense ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-1 text-[10px]"
-          )}
-        >
-          {item}
-        </span>
-      ))}
-    </div>
+    <p className={cn("font-medium text-zinc-600", dense ? "text-[9px] leading-4" : "text-[10px] leading-4")}>
+      {filtered.join(" | ")}
+    </p>
   )
 }
 
@@ -174,7 +165,7 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                           ))}
                         </ul>
                       ) : null}
-                      <ChipList items={project.technologies} dense={dense} />
+                      <InlineTagList items={project.technologies} dense={dense} />
                     </article>
                   ))}
                 </div>
@@ -222,7 +213,7 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                       ))}
                     </ul>
 
-                    <ChipList items={item.technologies} dense={dense} />
+                    <InlineTagList items={item.technologies} dense={dense} />
                   </article>
                 ))}
               </div>
@@ -260,7 +251,7 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                       <h3 className="text-[11px] font-bold leading-4 text-zinc-950">
                         {category.name}
                       </h3>
-                      <ChipList items={category.skills} dense={dense} />
+                      <InlineTagList items={category.skills} dense={dense} />
                     </div>
                   ))}
                 </div>

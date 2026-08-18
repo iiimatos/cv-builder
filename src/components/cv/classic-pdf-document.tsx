@@ -255,10 +255,15 @@ function MarkdownText({
   return (
     <Text style={style}>
       {parts.map((part, index) => {
+        const nextPart = parts[index + 1]
+        const leadingPunctuation = nextPart?.match(/^([,.;:!?])(\s*)/)
+        const suffix = leadingPunctuation?.[1] ?? ""
+
         if (part.startsWith("**") && part.endsWith("**")) {
           return (
             <Text key={`${part}-${index}`} style={styles.bold}>
               {cleanMarkdown(part.slice(2, -2))}
+              {suffix}
             </Text>
           )
         }
@@ -267,8 +272,13 @@ function MarkdownText({
           return (
             <Text key={`${part}-${index}`} style={styles.italic}>
               {cleanMarkdown(part.slice(1, -1))}
+              {suffix}
             </Text>
           )
+        }
+
+        if (part.match(/^[,.;:!?]\s*/) && parts[index - 1]?.match(/^\*[^*]+\*$|^\*\*[^*]+\*\*$/)) {
+          return part.replace(/^[,.;:!?]/, "")
         }
 
         return cleanMarkdown(part)
@@ -289,17 +299,14 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-function ChipList({ items }: { items: string[] }) {
-  if (items.length === 0) return null
+function InlineTagList({ items }: { items: string[] }) {
+  const filtered = items.filter(Boolean)
+  if (filtered.length === 0) return null
 
   return (
-    <View style={styles.chips}>
-      {items.map((item) => (
-        <Text key={item} style={styles.chip}>
-          {item}
-        </Text>
-      ))}
-    </View>
+    <Text style={styles.smallText}>
+      {filtered.join(" | ")}
+    </Text>
   )
 }
 
@@ -620,7 +627,7 @@ export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocume
                         <MarkdownText style={styles.bodyText}>{project.description}</MarkdownText>
                       ) : null}
                       <Bullets items={project.bullets} />
-                      <ChipList items={project.technologies} />
+                      <InlineTagList items={project.technologies} />
                     </View>
                   ))}
                 </View>
@@ -650,7 +657,7 @@ export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocume
                     ) : null}
 
                     <Bullets items={item.bullets} />
-                    <ChipList items={item.technologies} />
+                    <InlineTagList items={item.technologies} />
                   </View>
                 ))}
               </View>
@@ -678,7 +685,7 @@ export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocume
                 {data.skills.map((category) => (
                   <View key={category.id} style={styles.sideItem}>
                     <Text style={styles.itemSubtitle}>{category.name}</Text>
-                    <ChipList items={category.skills} />
+                    <InlineTagList items={category.skills} />
                   </View>
                 ))}
               </Section>
