@@ -32,6 +32,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePageOverflow } from "@/hooks/use-page-overflow"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
+import type { CVSettings } from "@/types/cv"
 
 function SaveStatus() {
   const status = useCVEditorStore((state) => state.status)
@@ -106,16 +107,32 @@ function EditorNavigation() {
 }
 
 function OverflowMeter({
+  pageMode,
   percentage,
   overflowPixels,
   overflowing,
   status,
 }: {
+  pageMode: CVSettings["pageMode"]
   percentage: number
   overflowPixels: number
   overflowing: boolean
   status: "ok" | "near" | "overflow"
 }) {
+  if (pageMode === "multi") {
+    return (
+      <div className="rounded-lg border bg-white p-3 text-sm shadow-sm">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <span className="font-medium">Multipágina</span>
+          <span className="font-semibold text-emerald-700">Activo</span>
+        </div>
+        <p className="text-xs font-medium text-zinc-600">
+          El PDF puede continuar en páginas adicionales. El medidor de una página queda desactivado.
+        </p>
+      </div>
+    )
+  }
+
   const barWidth = `${Math.min(percentage, 100)}%`
   const tone =
     status === "overflow"
@@ -165,7 +182,7 @@ function PreviewPanel() {
   return (
     <aside className="border-l bg-zinc-100 lg:h-[calc(100vh-57px)] lg:overflow-auto">
       <div className="sticky top-0 z-10 border-b bg-zinc-100/95 p-4 pb-5 backdrop-blur">
-        <OverflowMeter {...overflow} />
+        <OverflowMeter pageMode={deferredData.settings.pageMode} {...overflow} />
       </div>
       <div className="px-4 pb-8 pt-8">
         <div className="origin-top scale-[0.42] sm:scale-[0.5] lg:scale-[0.42] xl:scale-[0.5] 2xl:scale-[0.62]">

@@ -154,6 +154,7 @@
   "projects": [],
   "settings": {
     "template": "classic",
+    "pageMode": "single",
     "fontSize": "compact",
     "spacing": "compact",
     "showPhoto": true,

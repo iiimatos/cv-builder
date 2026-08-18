@@ -34,6 +34,24 @@ export function DesignForm() {
           </select>
         </label>
 
+        <label className="space-y-1.5 md:col-span-2">
+          <span className="text-sm font-medium">Modo de página</span>
+          <select
+            value={settings.pageMode}
+            onChange={(event) =>
+              updateSettings({ pageMode: event.target.value as CVSettings["pageMode"] })
+            }
+            className="h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm"
+          >
+            <option value="single">Una página</option>
+            <option value="multi">Multipágina</option>
+          </select>
+          <p className="text-xs text-muted-foreground">
+            Una página mantiene el control de espacio. Multipágina deja que el PDF continúe en
+            páginas adicionales.
+          </p>
+        </label>
+
         <label className="space-y-1.5">
           <span className="text-sm font-medium">Tamaño de texto</span>
           <select

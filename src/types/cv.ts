@@ -2,6 +2,7 @@ export type CVTemplate = "classic" | "ats" | "minimal"
 
 export interface CVSettings {
   template: CVTemplate
+  pageMode: "single" | "multi"
   fontSize: "compact" | "normal" | "large"
   spacing: "compact" | "normal" | "comfortable"
   showPhoto: boolean

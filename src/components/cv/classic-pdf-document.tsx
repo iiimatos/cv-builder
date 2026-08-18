@@ -545,7 +545,157 @@ function MinimalPDFPage({ data, photoPath }: IvanClassicPDFDocumentProps) {
   )
 }
 
+function MultiPagePDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) {
+  return (
+    <Document
+      title={`${data.personal.firstName} ${data.personal.lastName} CV`}
+      author={`${data.personal.firstName} ${data.personal.lastName}`}
+    >
+      <Page
+        size="A4"
+        style={{
+          ...styles.page,
+          paddingHorizontal: 42,
+          paddingVertical: 36,
+        }}
+        wrap
+      >
+        <View style={styles.header} wrap={false}>
+          <View style={styles.headerGrid}>
+            <View style={styles.headerContent}>
+              <Text style={styles.eyebrow}>Currículum profesional</Text>
+              <Text style={styles.name}>
+                {data.personal.firstName} {data.personal.lastName}
+              </Text>
+              <Text style={styles.title}>{data.personal.professionalTitle}</Text>
+
+              <View style={styles.contactGrid}>
+                {contacts(data).map((item) => (
+                  <Text key={`${item.label}-${item.value}`} style={styles.contactItem}>
+                    <Text style={styles.contactLabel}>{item.label}: </Text>
+                    {item.value}
+                  </Text>
+                ))}
+              </View>
+            </View>
+
+            {data.settings.showPhoto && photoPath ? (
+              // eslint-disable-next-line jsx-a11y/alt-text
+              <Image src={photoPath} style={styles.photo} />
+            ) : null}
+          </View>
+        </View>
+
+        <View style={{ gap: 16, paddingTop: 20 }}>
+          {data.summary.trim() ? (
+            <Section title="Resumen profesional">
+              <MarkdownText style={styles.bodyText}>{data.summary}</MarkdownText>
+            </Section>
+          ) : null}
+
+          <Section title="Experiencia">
+            <View style={styles.itemGroup}>
+              {data.experience.map((item, index) => (
+                <View
+                  key={item.id}
+                  style={index === data.experience.length - 1 ? styles.itemNoBorder : styles.item}
+                >
+                  <View style={styles.itemHeader}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.itemTitle}>{item.position}</Text>
+                      <Text style={styles.itemSubtitle}>{item.company}</Text>
+                      {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
+                    </View>
+                    <Text style={styles.date}>
+                      {dateRange(item.startDate, item.endDate, item.current)}
+                    </Text>
+                  </View>
+
+                  {item.description ? (
+                    <MarkdownText style={styles.bodyText}>{item.description}</MarkdownText>
+                  ) : null}
+
+                  <Bullets items={item.bullets} />
+                  <InlineTagList items={item.technologies} />
+                </View>
+              ))}
+            </View>
+          </Section>
+
+          {data.settings.showProjects && data.projects.length > 0 ? (
+            <Section title="Proyectos">
+              <View style={styles.itemGroup}>
+                {data.projects.map((project, index) => (
+                  <View
+                    key={project.id}
+                    style={index === data.projects.length - 1 ? styles.itemNoBorder : styles.item}
+                  >
+                    <View style={styles.itemHeader}>
+                      <Text style={styles.itemTitle}>{project.name}</Text>
+                      {project.url ? <Text style={styles.date}>{project.url}</Text> : null}
+                    </View>
+                    {project.description ? (
+                      <MarkdownText style={styles.bodyText}>{project.description}</MarkdownText>
+                    ) : null}
+                    <Bullets items={project.bullets} />
+                    <InlineTagList items={project.technologies} />
+                  </View>
+                ))}
+              </View>
+            </Section>
+          ) : null}
+
+          {data.education.length > 0 ? (
+            <Section title="Educación">
+              <View style={styles.itemGroup}>
+                {data.education.map((item) => (
+                  <View key={item.id} style={styles.itemNoBorder}>
+                    <Text style={styles.itemTitle}>{item.degree}</Text>
+                    <Text style={styles.smallText}>{item.institution}</Text>
+                    <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
+                    {item.description ? (
+                      <MarkdownText style={styles.smallText}>{item.description}</MarkdownText>
+                    ) : null}
+                  </View>
+                ))}
+              </View>
+            </Section>
+          ) : null}
+
+          {data.skills.length > 0 ? (
+            <Section title="Habilidades">
+              <View style={styles.itemGroup}>
+                {data.skills.map((category) => (
+                  <View key={category.id} style={styles.itemNoBorder}>
+                    <Text style={styles.itemSubtitle}>{category.name}</Text>
+                    <InlineTagList items={category.skills} />
+                  </View>
+                ))}
+              </View>
+            </Section>
+          ) : null}
+
+          {data.languages.length > 0 ? (
+            <Section title="Idiomas">
+              {data.languages.map((item) => (
+                <View key={item.id} style={styles.languageRow}>
+                  <Text style={styles.itemSubtitle}>{item.language}</Text>
+                  <Text style={styles.smallText}>{item.level}</Text>
+                </View>
+              ))}
+            </Section>
+          ) : null}
+        </View>
+      </Page>
+    </Document>
+  )
+}
+
 export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) {
+  if (data.settings.pageMode === "multi" && data.settings.template === "classic") {
+    return <MultiPagePDFDocument data={data} photoPath={photoPath} />
+  }
+
   if (data.settings.template === "ats") {
     return (
       <Document

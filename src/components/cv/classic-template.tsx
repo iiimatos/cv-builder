@@ -62,6 +62,261 @@ function contactItems(data: CVData) {
   ].filter((item): item is { icon: typeof MapPin; label: string; value: string } => Boolean(item))
 }
 
+function ClassicExperienceItem({
+  item,
+  dense,
+  bodyText,
+}: {
+  item: CVData["experience"][number]
+  dense: boolean
+  bodyText: string
+}) {
+  return (
+    <article
+      className={cn(
+        "grid break-inside-avoid border-b border-zinc-100 last:border-0 last:pb-0",
+        dense ? "gap-2 pb-3.5" : "gap-2.5 pb-4"
+      )}
+    >
+      <div className="grid gap-1 md:grid-cols-[1fr_auto] md:gap-4">
+        <div>
+          <h3 className="text-[14px] font-bold leading-tight text-zinc-950">
+            {item.position}
+          </h3>
+          <p className="text-[12px] font-semibold leading-5 text-zinc-700">
+            {item.company}
+          </p>
+          {item.location ? (
+            <p className="text-[10px] leading-4 text-zinc-500">{item.location}</p>
+          ) : null}
+        </div>
+        <p className="text-[10px] font-medium leading-4 text-zinc-500">
+          {dateRange(item.startDate, item.endDate, item.current)}
+        </p>
+      </div>
+
+      {item.description ? (
+        <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
+          {item.description}
+        </CVMarkdown>
+      ) : null}
+
+      <ul className={cn("list-disc pl-4 text-zinc-700", bodyText, dense ? "space-y-0.5" : "space-y-1")}>
+        {item.bullets.filter(Boolean).map((bullet) => (
+          <li key={bullet}>
+            <CVMarkdown>{bullet}</CVMarkdown>
+          </li>
+        ))}
+      </ul>
+
+      <InlineTagList items={item.technologies} dense={dense} />
+    </article>
+  )
+}
+
+export function MultiPageClassicTemplate({ data, pageRef }: IvanClassicTemplateProps) {
+  const contacts = contactItems(data)
+  const links = data.settings.showLinks
+    ? data.personal.links.filter((link) => link.label.trim() && link.url.trim())
+    : []
+  const photoSrc = data.personal.photo?.split("?")[0] ?? ""
+  const dense = data.settings.spacing === "compact" || data.settings.fontSize === "compact"
+  const bodyText = dense ? "text-[12px] leading-5" : "text-[13px] leading-[1.55]"
+  const smallText = dense ? "text-[10px] leading-4" : "text-[11px] leading-[1.45]"
+  const sectionSpace = dense ? "space-y-4" : "space-y-5"
+  const [firstExperience, ...remainingExperience] = data.experience
+  const showProjects = data.settings.showProjects && data.projects.length > 0
+  const hasSecondPage =
+    remainingExperience.length > 0 ||
+    showProjects ||
+    data.education.length > 0 ||
+    data.skills.length > 0 ||
+    data.languages.length > 0
+
+  return (
+    <div className="space-y-8">
+      <A4Page>
+        <article ref={pageRef} className="flex h-[297mm] flex-col overflow-hidden bg-white px-10 py-8">
+          <header className="border-b border-zinc-900 pb-4">
+            <div className="grid items-start gap-5 md:grid-cols-[1fr_38mm]">
+              <div className="min-w-0">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+                  Currículum profesional
+                </p>
+                <h1 className="mt-2 text-[38px] font-semibold leading-[0.95] tracking-normal text-zinc-950">
+                  {data.personal.firstName} {data.personal.lastName}
+                </h1>
+                <p className="mt-2 text-sm font-medium text-zinc-700">
+                  {data.personal.professionalTitle}
+                </p>
+
+                <div className="mt-5 grid gap-x-4 gap-y-1.5 text-[10px] leading-4 text-zinc-600 md:grid-cols-2">
+                  {contacts.map(({ icon: Icon, label, value }) => (
+                    <p key={label} className="flex min-w-0 items-center gap-2">
+                      <Icon className="size-3 shrink-0 text-zinc-500" />
+                      <span className="font-semibold text-zinc-800">{label}:</span>
+                      <span className="truncate">{value}</span>
+                    </p>
+                  ))}
+                  {links.map((link) => (
+                    <p key={link.id} className="flex min-w-0 items-center gap-2">
+                      <LinkIcon className="size-3 shrink-0 text-zinc-500" />
+                      <span className="font-semibold text-zinc-800">{link.label}:</span>
+                      <span className="truncate">{link.url}</span>
+                    </p>
+                  ))}
+                </div>
+              </div>
+
+              {data.settings.showPhoto ? (
+                <div className="flex justify-start md:justify-end">
+                  {photoSrc ? (
+                    <Image
+                      src={photoSrc}
+                      alt={`Foto de ${data.personal.firstName} ${data.personal.lastName}`}
+                      width={144}
+                      height={176}
+                      className="h-[42mm] w-[34mm] rounded-md border border-zinc-200 object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className="grid h-[42mm] w-[34mm] place-items-center rounded-md border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+                      Foto
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </header>
+
+          <main className={cn("flex-1 pt-5", sectionSpace)}>
+            {data.summary.trim() ? (
+              <Section title="Resumen profesional" dense={dense}>
+                <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
+                  {data.summary}
+                </CVMarkdown>
+              </Section>
+            ) : null}
+
+            {firstExperience ? (
+              <Section title="Experiencia" dense={dense}>
+                <ClassicExperienceItem item={firstExperience} dense={dense} bodyText={bodyText} />
+              </Section>
+            ) : null}
+          </main>
+        </article>
+      </A4Page>
+
+      {hasSecondPage ? (
+        <A4Page>
+          <article className="flex h-[297mm] flex-col overflow-hidden bg-white px-10 py-8">
+            <main className={sectionSpace}>
+              {remainingExperience.length > 0 ? (
+                <Section title="Experiencia" dense={dense}>
+                  <div className={dense ? "space-y-3.5" : "space-y-4"}>
+                    {remainingExperience.map((item) => (
+                      <ClassicExperienceItem
+                        key={item.id}
+                        item={item}
+                        dense={dense}
+                        bodyText={bodyText}
+                      />
+                    ))}
+                  </div>
+                </Section>
+              ) : null}
+
+              {showProjects ? (
+                <Section title="Proyectos" dense={dense}>
+                  <div className={dense ? "space-y-3" : "space-y-4"}>
+                    {data.projects.map((project) => (
+                      <article key={project.id} className="space-y-2 break-inside-avoid">
+                        <div className="flex items-start justify-between gap-4">
+                          <h3 className="text-[13px] font-bold text-zinc-950">{project.name}</h3>
+                          {project.url ? (
+                            <Globe2 className="mt-0.5 size-3.5 shrink-0 text-zinc-500" />
+                          ) : null}
+                        </div>
+                        {project.description ? (
+                          <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
+                            {project.description}
+                          </CVMarkdown>
+                        ) : null}
+                        {project.bullets.length > 0 ? (
+                          <ul className={cn("list-disc pl-4 text-zinc-700", bodyText)}>
+                            {project.bullets.filter(Boolean).map((bullet) => (
+                              <li key={bullet}>
+                                <CVMarkdown>{bullet}</CVMarkdown>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                        <InlineTagList items={project.technologies} dense={dense} />
+                      </article>
+                    ))}
+                  </div>
+                </Section>
+              ) : null}
+
+              <div className="grid gap-6 md:grid-cols-2">
+                {data.education.length > 0 ? (
+                  <Section title="Educación" dense={dense}>
+                    <div className={dense ? "space-y-3" : "space-y-4"}>
+                      {data.education.map((item) => (
+                        <article key={item.id} className="break-inside-avoid">
+                          <h3 className="text-[12px] font-bold leading-4 text-zinc-950">{item.degree}</h3>
+                          <p className={cn(smallText, "text-zinc-700")}>{item.institution}</p>
+                          <p className="text-[10px] font-medium leading-4 text-zinc-500">
+                            {dateRange(item.startDate, item.endDate)}
+                          </p>
+                          {item.description ? (
+                            <CVMarkdown className={cn("mt-1 text-zinc-600", smallText)}>
+                              {item.description}
+                            </CVMarkdown>
+                          ) : null}
+                        </article>
+                      ))}
+                    </div>
+                  </Section>
+                ) : null}
+
+                <div className={dense ? "space-y-4" : "space-y-5"}>
+                  {data.skills.length > 0 ? (
+                    <Section title="Habilidades" dense={dense}>
+                      <div className={dense ? "space-y-2.5" : "space-y-3"}>
+                        {data.skills.map((category) => (
+                          <div key={category.id} className="space-y-1.5 break-inside-avoid">
+                            <h3 className="text-[11px] font-bold leading-4 text-zinc-950">
+                              {category.name}
+                            </h3>
+                            <InlineTagList items={category.skills} dense={dense} />
+                          </div>
+                        ))}
+                      </div>
+                    </Section>
+                  ) : null}
+
+                  {data.languages.length > 0 ? (
+                    <Section title="Idiomas" dense={dense}>
+                      <div className="space-y-1.5">
+                        {data.languages.map((item) => (
+                          <p key={item.id} className="flex justify-between gap-3 text-[11px] leading-4 text-zinc-700">
+                            <span className="font-semibold text-zinc-950">{item.language}</span>
+                            <span>{item.level}</span>
+                          </p>
+                        ))}
+                      </div>
+                    </Section>
+                  ) : null}
+                </div>
+              </div>
+            </main>
+          </article>
+        </A4Page>
+      ) : null}
+    </div>
+  )
+}
+
 export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps) {
   const contacts = contactItems(data)
   const links = data.settings.showLinks
@@ -175,46 +430,12 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
             <Section title="Experiencia" dense={dense}>
               <div className={dense ? "space-y-3.5" : "space-y-4"}>
                 {data.experience.map((item) => (
-                  <article
+                  <ClassicExperienceItem
                     key={item.id}
-                    className={cn(
-                      "grid border-b border-zinc-100 last:border-0 last:pb-0",
-                      dense ? "gap-2 pb-3.5" : "gap-2.5 pb-4"
-                    )}
-                  >
-                    <div className="grid gap-1 md:grid-cols-[1fr_auto] md:gap-4">
-                      <div>
-                        <h3 className="text-[14px] font-bold leading-tight text-zinc-950">
-                          {item.position}
-                        </h3>
-                        <p className="text-[12px] font-semibold leading-5 text-zinc-700">
-                          {item.company}
-                        </p>
-                        {item.location ? (
-                          <p className="text-[10px] leading-4 text-zinc-500">{item.location}</p>
-                        ) : null}
-                      </div>
-                      <p className="text-[10px] font-medium leading-4 text-zinc-500">
-                        {dateRange(item.startDate, item.endDate, item.current)}
-                      </p>
-                    </div>
-
-                    {item.description ? (
-                      <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
-                        {item.description}
-                      </CVMarkdown>
-                    ) : null}
-
-                    <ul className={cn("list-disc pl-4 text-zinc-700", bodyText, dense ? "space-y-0.5" : "space-y-1")}>
-                      {item.bullets.filter(Boolean).map((bullet) => (
-                        <li key={bullet}>
-                          <CVMarkdown>{bullet}</CVMarkdown>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <InlineTagList items={item.technologies} dense={dense} />
-                  </article>
+                    item={item}
+                    dense={dense}
+                    bodyText={bodyText}
+                  />
                 ))}
               </div>
             </Section>
