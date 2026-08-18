@@ -18,7 +18,9 @@ interface ClassicPDFDocumentProps {
 const pageWidth = 595.28
 const pageHeight = 841.89
 
-Font.registerHyphenationCallback((word) => [word])
+Font.registerHyphenationCallback((word) => [word.replace(/\u00ad/g, "")])
+
+const WORD_JOINER = "\u2060"
 
 const styles = StyleSheet.create({
   page: {
@@ -263,7 +265,7 @@ function MarkdownText({
           return (
             <Text key={`${part}-${index}`} style={styles.bold}>
               {cleanMarkdown(part.slice(2, -2))}
-              {suffix}
+              {suffix ? `${WORD_JOINER}${suffix}` : ""}
             </Text>
           )
         }
@@ -272,7 +274,7 @@ function MarkdownText({
           return (
             <Text key={`${part}-${index}`} style={styles.italic}>
               {cleanMarkdown(part.slice(1, -1))}
-              {suffix}
+              {suffix ? `${WORD_JOINER}${suffix}` : ""}
             </Text>
           )
         }
@@ -454,171 +456,6 @@ function AtsPDFPage({ data }: { data: CVData }) {
   )
 }
 
-function MinimalPDFPage({ data, photoPath }: ClassicPDFDocumentProps) {
-  const contactLine = contacts(data).map((item) => item.value).join(" | ")
-
-  return (
-    <Page
-      size="A4"
-      style={{
-        ...styles.page,
-        backgroundColor: "#fbfbfa",
-        paddingHorizontal: 34,
-        paddingVertical: 24,
-      }}
-    >
-      <View style={{ borderBottomWidth: 1.25, borderBottomColor: "#18181b", paddingBottom: 12 }}>
-        <View style={{ flexDirection: "row", gap: 24 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: "#71717a", fontSize: 7.5, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase" }}>
-              Currículum
-            </Text>
-            <Text style={{ marginTop: 6, fontSize: 30, fontWeight: 700, lineHeight: 0.94 }}>
-              {data.personal.firstName} {data.personal.lastName}
-            </Text>
-          </View>
-          <View style={{ width: 180, justifyContent: "flex-end" }}>
-            {data.settings.showPhoto && photoPath ? (
-              // eslint-disable-next-line jsx-a11y/alt-text
-              <Image
-                src={photoPath}
-                style={{ alignSelf: "flex-end", width: 50, height: 58, objectFit: "cover", marginBottom: 7 }}
-              />
-            ) : null}
-            <Text style={{ color: "#27272a", fontSize: 10, fontWeight: 700, lineHeight: 1.25 }}>
-              {data.personal.professionalTitle}
-            </Text>
-            <Text style={{ marginTop: 6, color: "#52525b", fontSize: 6.7, lineHeight: 1.25 }}>
-              {contactLine}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ gap: 9, paddingTop: 11 }}>
-        {data.summary.trim() ? (
-          <View style={{ flexDirection: "row", gap: 14 }}>
-            <Text style={{ width: 34, color: "#a1a1aa", fontSize: 7.5, fontWeight: 700 }}>01</Text>
-            <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 6 }}>
-              <Text style={styles.sectionTitle}>Perfil</Text>
-              <View style={{ marginTop: 5 }}>
-                <MarkdownText style={{ color: "#3f3f46", fontSize: 8, lineHeight: 1.3 }}>
-                  {data.summary}
-                </MarkdownText>
-              </View>
-            </View>
-          </View>
-        ) : null}
-
-        <View style={{ flexDirection: "row", gap: 14 }}>
-          <Text style={{ width: 34, color: "#a1a1aa", fontSize: 7.5, fontWeight: 700 }}>02</Text>
-          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 6 }}>
-            <Text style={styles.sectionTitle}>Experiencia</Text>
-            <View style={{ marginTop: 6 }}>
-              <View style={{ gap: 7 }}>
-                {data.experience.map((item) => (
-                  <View key={item.id} style={{ gap: 3, borderBottomWidth: 1, borderBottomColor: "#e4e4e7", paddingBottom: 6 }}>
-                    <View style={styles.itemHeader}>
-                      <View>
-                        <Text style={{ fontSize: 9.5, fontWeight: 700, lineHeight: 1.15 }}>{item.position}</Text>
-                        <Text style={{ color: "#52525b", fontSize: 8, fontWeight: 700, lineHeight: 1.2 }}>{item.company}</Text>
-                        {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
-                      </View>
-                      <Text style={styles.date}>{dateRange(item.startDate, item.endDate, item.current)}</Text>
-                    </View>
-                    {item.description ? (
-                      <MarkdownText style={{ color: "#3f3f46", fontSize: 8, lineHeight: 1.25 }}>
-                        {item.description}
-                      </MarkdownText>
-                    ) : null}
-                    <View>
-                      {item.bullets.filter(Boolean).slice(0, 3).map((bullet) => (
-                        <View key={bullet} style={{ flexDirection: "row", gap: 4, marginBottom: 1 }}>
-                          <Text style={{ width: 5, color: "#3f3f46", fontSize: 8, lineHeight: 1.3 }}>•</Text>
-                          <View style={{ flex: 1 }}>
-                            <MarkdownText style={{ color: "#3f3f46", fontSize: 8, lineHeight: 1.25 }}>
-                              {bullet}
-                            </MarkdownText>
-                          </View>
-                        </View>
-                      ))}
-                    </View>
-                    {item.technologies.length > 0 ? (
-                      <Text style={{ color: "#52525b", fontSize: 6.8, lineHeight: 1.2 }}>
-                        {item.technologies.join(" | ")}
-                      </Text>
-                    ) : null}
-                  </View>
-                ))}
-              </View>
-            </View>
-          </View>
-        </View>
-
-        <View style={{ flexDirection: "row", gap: 14 }}>
-          <Text style={{ width: 34, color: "#a1a1aa", fontSize: 7.5, fontWeight: 700 }}>03</Text>
-          <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 6 }}>
-            <Text style={styles.sectionTitle}>Formación y habilidades</Text>
-            <View style={{ marginTop: 6, flexDirection: "row", gap: 18 }}>
-              <View style={{ width: 160, gap: 7 }}>
-                <Text style={{ color: "#71717a", fontSize: 7, fontWeight: 700, letterSpacing: 0.9, textTransform: "uppercase" }}>
-                  Educación
-                </Text>
-                {data.education.map((item) => (
-                  <View key={item.id}>
-                    <Text style={{ fontSize: 8.5, fontWeight: 700, lineHeight: 1.2 }}>{item.degree}</Text>
-                    <Text style={{ color: "#3f3f46", fontSize: 7.2, lineHeight: 1.2 }}>{item.institution}</Text>
-                    <Text style={{ color: "#71717a", fontSize: 6.8, lineHeight: 1.2 }}>{dateRange(item.startDate, item.endDate)}</Text>
-                  </View>
-                ))}
-              </View>
-
-              <View style={{ flex: 1, gap: 6 }}>
-                <Text style={{ color: "#71717a", fontSize: 7, fontWeight: 700, letterSpacing: 0.9, textTransform: "uppercase" }}>
-                  Habilidades
-                </Text>
-                {data.skills.map((category) => (
-                  <Text key={category.id} style={{ color: "#3f3f46", fontSize: 7.2, lineHeight: 1.2 }}>
-                    <Text style={styles.bold}>{category.name}: </Text>
-                    {category.skills.join(" | ")}
-                  </Text>
-                ))}
-
-                {(data.languages.length > 0 ||
-                  (data.settings.showSpecializations && data.specializations.length > 0)) ? (
-                  <View style={{ flexDirection: "row", gap: 14, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 5 }}>
-                    {data.languages.length > 0 ? (
-                      <View style={{ flex: 1, gap: 2 }}>
-                        <Text style={{ color: "#71717a", fontSize: 7, fontWeight: 700, letterSpacing: 0.9, textTransform: "uppercase" }}>
-                          Idiomas
-                        </Text>
-                        <Text style={{ color: "#3f3f46", fontSize: 7.2, lineHeight: 1.2 }}>
-                          {data.languages.map((item) => `${item.language}: ${item.level}`).join(" | ")}
-                        </Text>
-                      </View>
-                    ) : null}
-
-                    {data.settings.showSpecializations && data.specializations.length > 0 ? (
-                      <View style={{ flex: 1, gap: 2 }}>
-                        <Text style={{ color: "#71717a", fontSize: 7, fontWeight: 700, letterSpacing: 0.9, textTransform: "uppercase" }}>
-                          Áreas de especialización
-                        </Text>
-                        <Text style={{ color: "#3f3f46", fontSize: 7.2, lineHeight: 1.2 }}>
-                          {data.specializations.filter(Boolean).join(" | ")}
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View>
-                ) : null}
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-    </Page>
-  )
-}
-
 function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
   return (
     <Document
@@ -783,17 +620,6 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
         author={`${data.personal.firstName} ${data.personal.lastName}`}
       >
         <AtsPDFPage data={data} />
-      </Document>
-    )
-  }
-
-  if (data.settings.template === "minimal") {
-    return (
-      <Document
-        title={`${data.personal.firstName} ${data.personal.lastName} CV`}
-        author={`${data.personal.firstName} ${data.personal.lastName}`}
-      >
-        <MinimalPDFPage data={data} photoPath={photoPath} />
       </Document>
     )
   }

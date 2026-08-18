@@ -61,7 +61,7 @@ export const projectItemSchema = z.object({
 })
 
 export const cvSettingsSchema = z.object({
-  template: z.enum(["classic", "ats", "minimal"]),
+  template: z.enum(["classic", "ats"]),
   pageMode: z.enum(["single", "multi"]).default("single"),
   fontSize: z.enum(["compact", "normal", "large"]),
   spacing: z.enum(["compact", "normal", "comfortable"]),

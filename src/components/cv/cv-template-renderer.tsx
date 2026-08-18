@@ -2,7 +2,6 @@ import type { RefObject } from "react"
 
 import { AtsTemplate, MultiPageAtsTemplate } from "@/components/cv/ats-template"
 import { ClassicTemplate, MultiPageClassicTemplate } from "@/components/cv/classic-template"
-import { MinimalTemplate, MultiPageMinimalTemplate } from "@/components/cv/minimal-template"
 import type { CVData } from "@/types/cv"
 
 interface CVTemplateRendererProps {
@@ -16,19 +15,11 @@ export function CVTemplateRenderer({ data, pageRef }: CVTemplateRendererProps) {
       return <MultiPageAtsTemplate data={data} pageRef={pageRef} />
     }
 
-    if (data.settings.template === "minimal") {
-      return <MultiPageMinimalTemplate data={data} pageRef={pageRef} />
-    }
-
     return <MultiPageClassicTemplate data={data} pageRef={pageRef} />
   }
 
   if (data.settings.template === "ats") {
     return <AtsTemplate data={data} pageRef={pageRef} />
-  }
-
-  if (data.settings.template === "minimal") {
-    return <MinimalTemplate data={data} pageRef={pageRef} />
   }
 
   return <ClassicTemplate data={data} pageRef={pageRef} />

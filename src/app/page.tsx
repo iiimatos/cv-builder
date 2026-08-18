@@ -23,7 +23,7 @@ const workflow = [
   {
     icon: LayoutTemplate,
     title: "Elige la plantilla",
-    description: "Cambia entre estilos Classic, ATS y Minimal sin tocar la información base.",
+    description: "Cambia entre estilos Classic y ATS sin tocar la información base.",
   },
   {
     icon: Download,
@@ -158,7 +158,7 @@ export default function Home() {
                       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-400">
                         Plantilla
                       </p>
-                      {["Classic", "ATS", "Minimal"].map((item, index) => (
+                      {["Classic", "ATS"].map((item, index) => (
                         <span
                           key={item}
                           className={cn(

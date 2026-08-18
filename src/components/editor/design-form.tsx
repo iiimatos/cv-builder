@@ -30,7 +30,6 @@ export function DesignForm() {
           >
             <option value="classic">Classic</option>
             <option value="ats">ATS</option>
-            <option value="minimal">Minimal</option>
           </select>
         </label>
 
