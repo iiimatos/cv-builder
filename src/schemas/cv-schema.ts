@@ -69,6 +69,7 @@ export const cvSettingsSchema = z.object({
   showLocation: z.boolean(),
   showLinks: z.boolean(),
   showProjects: z.boolean(),
+  showSpecializations: z.boolean().default(true),
 })
 
 export const cvDataSchema = z.object({
@@ -78,6 +79,7 @@ export const cvDataSchema = z.object({
   education: z.array(educationItemSchema),
   skills: z.array(skillCategorySchema),
   languages: z.array(languageItemSchema),
+  specializations: z.array(z.string().trim()).default([]),
   projects: z.array(projectItemSchema),
   settings: cvSettingsSchema,
 })

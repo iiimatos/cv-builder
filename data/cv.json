@@ -132,7 +132,6 @@
       "skills": [
         "Docker",
         "Docker Compose",
-        "Azure",
         "Azure DevOps",
         "GitLab CI/CD",
         "Git"
@@ -151,6 +150,13 @@
       "level": "Profesional"
     }
   ],
+  "specializations": [
+    "Arquitectura de software",
+    "Desarrollo Full Stack",
+    "Integraciones empresariales",
+    "Automatización de procesos",
+    "Sistemas financieros"
+  ],
   "projects": [],
   "settings": {
     "template": "classic",
@@ -160,6 +166,7 @@
     "showPhoto": true,
     "showLocation": true,
     "showLinks": true,
-    "showProjects": false
+    "showProjects": false,
+    "showSpecializations": true
   }
 }

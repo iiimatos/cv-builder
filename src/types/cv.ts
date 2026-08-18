@@ -9,6 +9,7 @@ export interface CVSettings {
   showLocation: boolean
   showLinks: boolean
   showProjects: boolean
+  showSpecializations: boolean
 }
 
 export interface PersonalInfo {
@@ -78,6 +79,7 @@ export interface CVData {
   education: EducationItem[]
   skills: SkillCategory[]
   languages: LanguageItem[]
+  specializations: string[]
   projects: ProjectItem[]
   settings: CVSettings
 }

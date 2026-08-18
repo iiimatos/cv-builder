@@ -121,6 +121,16 @@ export function DesignForm() {
           />
           Mostrar proyectos
         </label>
+
+        <label className="flex items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            checked={settings.showSpecializations}
+            onChange={(event) => updateSettings({ showSpecializations: event.target.checked })}
+            className="size-4 rounded border-input"
+          />
+          Mostrar áreas de especialización
+        </label>
       </div>
     </section>
   )

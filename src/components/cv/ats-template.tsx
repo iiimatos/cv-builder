@@ -36,6 +36,19 @@ function InlineList({ items }: { items: string[] }) {
   )
 }
 
+function BulletList({ items }: { items: string[] }) {
+  const filtered = items.filter(Boolean)
+  if (filtered.length === 0) return null
+
+  return (
+    <ul className="list-disc space-y-0.5 pl-4 text-[10px] leading-4 text-zinc-700">
+      {filtered.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  )
+}
+
 function ExperienceItem({
   item,
   bodyText,
@@ -86,12 +99,15 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
   const sectionSpace = dense ? "space-y-3.5" : "space-y-4"
   const [firstExperience, ...remainingExperience] = data.experience
   const showProjects = data.settings.showProjects && data.projects.length > 0
+  const showSpecializations =
+    data.settings.showSpecializations && data.specializations.length > 0
   const hasSecondPage =
     remainingExperience.length > 0 ||
     showProjects ||
     data.education.length > 0 ||
     data.skills.length > 0 ||
-    data.languages.length > 0
+    data.languages.length > 0 ||
+    showSpecializations
 
   return (
     <div className="space-y-8">
@@ -188,12 +204,22 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
                 </Section>
               </div>
 
-              {data.languages.length > 0 ? (
-                <Section title="Idiomas">
-                  <InlineList
-                    items={data.languages.map((item) => `${item.language}: ${item.level}`)}
-                  />
-                </Section>
+              {(data.languages.length > 0 || showSpecializations) ? (
+                <div className="grid grid-cols-2 gap-8">
+                  {data.languages.length > 0 ? (
+                    <Section title="Idiomas">
+                      <InlineList
+                        items={data.languages.map((item) => `${item.language}: ${item.level}`)}
+                      />
+                    </Section>
+                  ) : null}
+
+                  {showSpecializations ? (
+                    <Section title="Áreas de especialización">
+                      <BulletList items={data.specializations} />
+                    </Section>
+                  ) : null}
+                </div>
               ) : null}
             </main>
           </article>
@@ -291,12 +317,23 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
             </Section>
           </div>
 
-          {data.languages.length > 0 ? (
-            <Section title="Idiomas">
-              <InlineList
-                items={data.languages.map((item) => `${item.language}: ${item.level}`)}
-              />
-            </Section>
+          {(data.languages.length > 0 ||
+            (data.settings.showSpecializations && data.specializations.length > 0)) ? (
+            <div className="grid grid-cols-2 gap-8">
+              {data.languages.length > 0 ? (
+                <Section title="Idiomas">
+                  <InlineList
+                    items={data.languages.map((item) => `${item.language}: ${item.level}`)}
+                  />
+                </Section>
+              ) : null}
+
+              {data.settings.showSpecializations && data.specializations.length > 0 ? (
+                <Section title="Áreas de especialización">
+                  <BulletList items={data.specializations} />
+                </Section>
+              ) : null}
+            </div>
           ) : null}
         </main>
       </article>

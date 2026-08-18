@@ -75,6 +75,19 @@ function SkillPills({ items }: { items: string[] }) {
   )
 }
 
+function CompactTextList({ items }: { items: string[] }) {
+  const filtered = items.filter(Boolean)
+  if (filtered.length === 0) return null
+
+  return (
+    <ul className="list-disc space-y-0.5 pl-4 text-[9.5px] leading-4 text-zinc-700">
+      {filtered.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  )
+}
+
 function ExperienceItem({
   item,
   bodyText,
@@ -128,12 +141,15 @@ export function MultiPageMinimalTemplate({ data, pageRef }: MinimalTemplateProps
   ].filter(Boolean)
   const [firstExperience, ...remainingExperience] = data.experience
   const showProjects = data.settings.showProjects && data.projects.length > 0
+  const showSpecializations =
+    data.settings.showSpecializations && data.specializations.length > 0
   const hasSecondPage =
     remainingExperience.length > 0 ||
     showProjects ||
     data.education.length > 0 ||
     data.skills.length > 0 ||
-    data.languages.length > 0
+    data.languages.length > 0 ||
+    showSpecializations
 
   return (
     <div className="space-y-8">
@@ -253,6 +269,12 @@ export function MultiPageMinimalTemplate({ data, pageRef }: MinimalTemplateProps
                   </div>
                 </Section>
               ) : null}
+
+              {showSpecializations ? (
+                <Section number="07" title="Áreas de especialización">
+                  <CompactTextList items={data.specializations} />
+                </Section>
+              ) : null}
             </main>
           </article>
         </A4Page>
@@ -362,6 +384,15 @@ export function MinimalTemplate({ data, pageRef }: MinimalTemplateProps) {
                         <span className="font-bold text-zinc-950">{item.language}</span> · {item.level}
                       </p>
                     ))}
+                  </div>
+                ) : null}
+
+                {data.settings.showSpecializations && data.specializations.length > 0 ? (
+                  <div className="border-t border-zinc-200 pt-2">
+                    <h3 className="mb-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+                      Áreas de especialización
+                    </h3>
+                    <CompactTextList items={data.specializations} />
                   </div>
                 ) : null}
               </div>

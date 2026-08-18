@@ -43,6 +43,7 @@ interface CVEditorState {
   updateLanguage: (id: string, updates: Partial<LanguageItem>) => void
   removeLanguage: (id: string) => void
   reorderLanguage: (activeId: string, overId: string) => void
+  setSpecializations: (specializations: string[]) => void
   addProject: () => void
   updateProject: (id: string, updates: Partial<ProjectItem>) => void
   removeProject: (id: string) => void
@@ -365,6 +366,17 @@ export const useCVEditorStore = create<CVEditorState>((set, get) => ({
 
     set({
       data: { ...data, languages: reorderCollection(data.languages, activeId, overId) },
+      dirty: true,
+      status: "editing",
+    })
+  },
+
+  setSpecializations(specializations) {
+    const data = get().data
+    if (!data) return
+
+    set({
+      data: { ...data, specializations },
       dirty: true,
       status: "editing",
     })

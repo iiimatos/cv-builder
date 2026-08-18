@@ -20,6 +20,7 @@ import { LanguagesForm } from "@/components/editor/languages-form"
 import { PersonalForm } from "@/components/editor/personal-form"
 import { ProjectsForm } from "@/components/editor/projects-form"
 import { SkillsForm } from "@/components/editor/skills-form"
+import { SpecializationsForm } from "@/components/editor/specializations-form"
 import { SummaryForm } from "@/components/editor/summary-form"
 import { Button } from "@/components/ui/button"
 import {
@@ -84,6 +85,7 @@ function EditorNavigation() {
     { label: "Educación", target: "educacion" },
     { label: "Habilidades", target: "habilidades" },
     { label: "Idiomas", target: "idiomas" },
+    { label: "Especialización", target: "especializacion" },
     { label: "Proyectos", target: "proyectos" },
     { label: "Diseño", target: "diseno" },
   ]
@@ -202,6 +204,7 @@ function EditorForms() {
       <EducationForm />
       <SkillsForm />
       <LanguagesForm />
+      <SpecializationsForm />
       <ProjectsForm />
       <DesignForm />
     </div>

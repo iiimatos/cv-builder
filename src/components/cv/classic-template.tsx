@@ -44,6 +44,19 @@ function InlineTagList({ items, dense = false }: { items: string[]; dense?: bool
   )
 }
 
+function SpecializationsList({ items, dense = false }: { items: string[]; dense?: boolean }) {
+  const filtered = items.filter(Boolean)
+  if (filtered.length === 0) return null
+
+  return (
+    <ul className={cn("list-disc pl-4 text-zinc-700", dense ? "space-y-0.5 text-[10px] leading-4" : "space-y-1 text-[11px] leading-[1.45]")}>
+      {filtered.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  )
+}
+
 function dateRange(startDate?: string, endDate?: string, current?: boolean) {
   return [startDate, current ? "Actualidad" : endDate].filter(Boolean).join(" - ")
 }
@@ -126,12 +139,15 @@ export function MultiPageClassicTemplate({ data, pageRef }: IvanClassicTemplateP
   const sectionSpace = dense ? "space-y-4" : "space-y-5"
   const [firstExperience, ...remainingExperience] = data.experience
   const showProjects = data.settings.showProjects && data.projects.length > 0
+  const showSpecializations =
+    data.settings.showSpecializations && data.specializations.length > 0
   const hasSecondPage =
     remainingExperience.length > 0 ||
     showProjects ||
     data.education.length > 0 ||
     data.skills.length > 0 ||
-    data.languages.length > 0
+    data.languages.length > 0 ||
+    showSpecializations
 
   return (
     <div className="space-y-8">
@@ -305,6 +321,12 @@ export function MultiPageClassicTemplate({ data, pageRef }: IvanClassicTemplateP
                           </p>
                         ))}
                       </div>
+                    </Section>
+                  ) : null}
+
+                  {showSpecializations ? (
+                    <Section title="Áreas de especialización" dense={dense}>
+                      <SpecializationsList items={data.specializations} dense={dense} />
                     </Section>
                   ) : null}
                 </div>
@@ -489,6 +511,12 @@ export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps)
                     </p>
                   ))}
                 </div>
+              </Section>
+            ) : null}
+
+            {data.settings.showSpecializations && data.specializations.length > 0 ? (
+              <Section title="Áreas de especialización" dense={dense}>
+                <SpecializationsList items={data.specializations} dense={dense} />
               </Section>
             ) : null}
           </aside>

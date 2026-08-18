@@ -310,6 +310,22 @@ function InlineTagList({ items }: { items: string[] }) {
   )
 }
 
+function Specializations({ items }: { items: string[] }) {
+  const filtered = items.filter(Boolean)
+  if (filtered.length === 0) return null
+
+  return (
+    <View>
+      {filtered.map((item) => (
+        <View key={item} style={styles.bulletRow}>
+          <Text style={styles.bulletDot}>•</Text>
+          <Text style={styles.smallText}>{item}</Text>
+        </View>
+      ))}
+    </View>
+  )
+}
+
 function Bullets({ items }: { items: string[] }) {
   const bullets = items.filter(Boolean)
   if (bullets.length === 0) return null
@@ -410,6 +426,29 @@ function AtsPDFPage({ data }: { data: CVData }) {
             </Section>
           </View>
         </View>
+
+        {(data.languages.length > 0 ||
+          (data.settings.showSpecializations && data.specializations.length > 0)) ? (
+          <View style={{ flexDirection: "row", gap: 24 }}>
+            {data.languages.length > 0 ? (
+              <View style={{ flex: 1 }}>
+                <Section title="Idiomas">
+                  <Text style={styles.smallText}>
+                    {data.languages.map((item) => `${item.language}: ${item.level}`).join(" | ")}
+                  </Text>
+                </Section>
+              </View>
+            ) : null}
+
+            {data.settings.showSpecializations && data.specializations.length > 0 ? (
+              <View style={{ flex: 1 }}>
+                <Section title="Áreas de especialización">
+                  <Specializations items={data.specializations} />
+                </Section>
+              </View>
+            ) : null}
+          </View>
+        ) : null}
       </View>
     </Page>
   )
@@ -540,6 +579,18 @@ function MinimalPDFPage({ data, photoPath }: IvanClassicPDFDocumentProps) {
             </View>
           </View>
         </View>
+
+        {data.settings.showSpecializations && data.specializations.length > 0 ? (
+          <View style={{ flexDirection: "row", gap: 18 }}>
+            <Text style={{ width: 42, color: "#a1a1aa", fontSize: 8, fontWeight: 700 }}>05</Text>
+            <View style={{ flex: 1, borderTopWidth: 1, borderTopColor: "#e4e4e7", paddingTop: 7 }}>
+              <Text style={styles.sectionTitle}>Áreas de especialización</Text>
+              <View style={{ marginTop: 6 }}>
+                <Specializations items={data.specializations} />
+              </View>
+            </View>
+          </View>
+        ) : null}
       </View>
     </Page>
   )
@@ -683,6 +734,12 @@ function MultiPagePDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) 
                   <Text style={styles.smallText}>{item.level}</Text>
                 </View>
               ))}
+            </Section>
+          ) : null}
+
+          {data.settings.showSpecializations && data.specializations.length > 0 ? (
+            <Section title="Áreas de especialización">
+              <Specializations items={data.specializations} />
             </Section>
           ) : null}
         </View>
@@ -849,6 +906,12 @@ export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocume
                     <Text style={styles.smallText}>{item.level}</Text>
                   </View>
                 ))}
+              </Section>
+            ) : null}
+
+            {data.settings.showSpecializations && data.specializations.length > 0 ? (
+              <Section title="Áreas de especialización">
+                <Specializations items={data.specializations} />
               </Section>
             ) : null}
           </View>
