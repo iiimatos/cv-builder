@@ -1,7 +1,7 @@
 import type { RefObject } from "react"
 
 import { AtsTemplate, MultiPageAtsTemplate } from "@/components/cv/ats-template"
-import { IvanClassicTemplate, MultiPageClassicTemplate } from "@/components/cv/classic-template"
+import { ClassicTemplate, MultiPageClassicTemplate } from "@/components/cv/classic-template"
 import { MinimalTemplate, MultiPageMinimalTemplate } from "@/components/cv/minimal-template"
 import type { CVData } from "@/types/cv"
 
@@ -31,5 +31,5 @@ export function CVTemplateRenderer({ data, pageRef }: CVTemplateRendererProps) {
     return <MinimalTemplate data={data} pageRef={pageRef} />
   }
 
-  return <IvanClassicTemplate data={data} pageRef={pageRef} />
+  return <ClassicTemplate data={data} pageRef={pageRef} />
 }

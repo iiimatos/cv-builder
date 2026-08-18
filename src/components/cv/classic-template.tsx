@@ -7,7 +7,7 @@ import { CVMarkdown } from "@/components/cv/cv-markdown"
 import { cn } from "@/lib/utils"
 import type { CVData } from "@/types/cv"
 
-interface IvanClassicTemplateProps {
+interface ClassicTemplateProps {
   data: CVData
   pageRef?: RefObject<HTMLElement | null>
 }
@@ -127,7 +127,7 @@ function ClassicExperienceItem({
   )
 }
 
-export function MultiPageClassicTemplate({ data, pageRef }: IvanClassicTemplateProps) {
+export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
   const contacts = contactItems(data)
   const links = data.settings.showLinks
     ? data.personal.links.filter((link) => link.label.trim() && link.url.trim())
@@ -339,7 +339,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: IvanClassicTemplateP
   )
 }
 
-export function IvanClassicTemplate({ data, pageRef }: IvanClassicTemplateProps) {
+export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
   const contacts = contactItems(data)
   const links = data.settings.showLinks
     ? data.personal.links.filter((link) => link.label.trim() && link.url.trim())

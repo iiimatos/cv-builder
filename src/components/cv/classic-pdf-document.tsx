@@ -10,7 +10,7 @@ import {
 
 import type { CVData } from "@/types/cv"
 
-interface IvanClassicPDFDocumentProps {
+interface ClassicPDFDocumentProps {
   data: CVData
   photoPath?: string
 }
@@ -351,8 +351,8 @@ function contacts(data: CVData) {
     data.personal.phone ? { label: "Teléfono", value: data.personal.phone } : null,
     ...(data.settings.showLinks
       ? data.personal.links
-          .filter((link) => link.label.trim() && link.url.trim())
-          .map((link) => ({ label: link.label, value: link.url }))
+        .filter((link) => link.label.trim() && link.url.trim())
+        .map((link) => ({ label: link.label, value: link.url }))
       : []),
   ].filter((item): item is { label: string; value: string } => Boolean(item))
 }
@@ -454,7 +454,7 @@ function AtsPDFPage({ data }: { data: CVData }) {
   )
 }
 
-function MinimalPDFPage({ data, photoPath }: IvanClassicPDFDocumentProps) {
+function MinimalPDFPage({ data, photoPath }: ClassicPDFDocumentProps) {
   const contactLine = contacts(data).map((item) => item.value).join(" | ")
 
   return (
@@ -619,7 +619,7 @@ function MinimalPDFPage({ data, photoPath }: IvanClassicPDFDocumentProps) {
   )
 }
 
-function MultiPagePDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) {
+function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
   return (
     <Document
       title={`${data.personal.firstName} ${data.personal.lastName} CV`}
@@ -771,7 +771,7 @@ function MultiPagePDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) 
   )
 }
 
-export function IvanClassicPDFDocument({ data, photoPath }: IvanClassicPDFDocumentProps) {
+export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
   if (data.settings.pageMode === "multi" && data.settings.template === "classic") {
     return <MultiPagePDFDocument data={data} photoPath={photoPath} />
   }

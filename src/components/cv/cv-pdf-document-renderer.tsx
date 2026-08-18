@@ -1,4 +1,4 @@
-import { IvanClassicPDFDocument } from "@/components/cv/classic-pdf-document"
+import { ClassicPDFDocument } from "@/components/cv/classic-pdf-document"
 import type { CVData } from "@/types/cv"
 
 interface CVPDFDocumentRendererProps {
@@ -7,5 +7,5 @@ interface CVPDFDocumentRendererProps {
 }
 
 export function CVPDFDocumentRenderer({ data, photoPath }: CVPDFDocumentRendererProps) {
-  return <IvanClassicPDFDocument data={data} photoPath={photoPath} />
+  return <ClassicPDFDocument data={data} photoPath={photoPath} />
 }

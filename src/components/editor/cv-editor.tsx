@@ -261,7 +261,7 @@ export function CVEditor() {
                 render={
                   <a
                     href="/api/pdf"
-                    download="ivan-matos-cv.pdf"
+                    download="cv.pdf"
                     aria-disabled={!data || dirty}
                     className={!data || dirty ? "pointer-events-none opacity-50" : undefined}
                     title={
