@@ -11,7 +11,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "CV Builder",
-  description: "Editor local de currículum creado con Next.js",
+  description: "Editor local para crear, previsualizar y exportar currículums profesionales.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
