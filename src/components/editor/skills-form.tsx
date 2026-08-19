@@ -6,6 +6,7 @@ import { SortableEditorList } from "@/components/editor/sortable-editor-list"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useMessages } from "@/hooks/use-messages"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 
 function toLines(value: string) {
@@ -21,19 +22,18 @@ export function SkillsForm() {
   const updateSkillCategory = useCVEditorStore((state) => state.updateSkillCategory)
   const removeSkillCategory = useCVEditorStore((state) => state.removeSkillCategory)
   const reorderSkillCategory = useCVEditorStore((state) => state.reorderSkillCategory)
+  const { ui } = useMessages()
 
   return (
     <section id="habilidades" className="scroll-mt-20 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Habilidades</h2>
-          <p className="text-sm text-muted-foreground">
-            Agrupa tecnologías y capacidades por categoría.
-          </p>
+          <h2 className="text-lg font-semibold">{ui.skills}</h2>
+          <p className="text-sm text-muted-foreground">{ui.skillsDescription}</p>
         </div>
         <Button type="button" onClick={addSkillCategory}>
           <Plus className="size-4" />
-          Agregar
+          {ui.add}
         </Button>
       </div>
 
@@ -45,17 +45,15 @@ export function SkillsForm() {
         renderItem={(item) => (
           <div className="space-y-3">
             <label className="block space-y-1.5">
-              <span className="text-sm font-medium">Categoría</span>
+              <span className="text-sm font-medium">{ui.category}</span>
               <Input
                 value={item.name}
                 onChange={(event) => updateSkillCategory(item.id, { name: event.target.value })}
               />
             </label>
             <label className="block space-y-1.5">
-              <span className="text-sm font-medium">Habilidades</span>
-              <span className="block text-xs text-muted-foreground">
-                Una habilidad por línea. Puedes usar comas dentro de cada habilidad.
-              </span>
+              <span className="text-sm font-medium">{ui.skills}</span>
+              <span className="block text-xs text-muted-foreground">{ui.oneSkillPerLine}</span>
               <Textarea
                 value={item.skills.join("\n")}
                 onChange={(event) =>
@@ -71,7 +69,7 @@ export function SkillsForm() {
               onClick={() => removeSkillCategory(item.id)}
             >
               <Trash2 className="size-4" />
-              Eliminar
+              {ui.remove}
             </Button>
           </div>
         )}

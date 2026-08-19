@@ -8,26 +8,14 @@ import { ImagePlus, Plus, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useMessages } from "@/hooks/use-messages"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 import type { PersonalInfo, PersonalLink } from "@/types/cv"
 
-const fields: Array<{
-  name: Exclude<keyof PersonalInfo, "links" | "photo">
-  label: string
-  placeholder?: string
-}> = [
-  { name: "firstName", label: "Nombre" },
-  { name: "lastName", label: "Apellido" },
-  { name: "professionalTitle", label: "Título profesional" },
-  { name: "location", label: "Ubicación" },
-  { name: "email", label: "Correo electrónico" },
-  { name: "phone", label: "Teléfono" },
-]
-
-function createPersonalLink(): PersonalLink {
+function createPersonalLink(label: string): PersonalLink {
   return {
     id: crypto.randomUUID(),
-    label: "Nuevo enlace",
+    label,
     url: "",
   }
 }
@@ -35,6 +23,7 @@ function createPersonalLink(): PersonalLink {
 export function PersonalForm() {
   const personal = useCVEditorStore((state) => state.data?.personal)
   const setPersonal = useCVEditorStore((state) => state.setPersonal)
+  const { ui } = useMessages()
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const { register, reset } = useForm<PersonalInfo>({
@@ -47,6 +36,18 @@ export function PersonalForm() {
 
   if (!personal) return null
   const photoPreview = personal.photo?.split("?")[0] ?? ""
+  const fields: Array<{
+    name: Exclude<keyof PersonalInfo, "links" | "photo">
+    label: string
+    placeholder?: string
+  }> = [
+    { name: "firstName", label: ui.firstName },
+    { name: "lastName", label: ui.lastName },
+    { name: "professionalTitle", label: ui.professionalTitle },
+    { name: "location", label: ui.location },
+    { name: "email", label: ui.email },
+    { name: "phone", label: ui.phone },
+  ]
 
   const updateLink = (id: string, updates: Partial<PersonalLink>) => {
     setPersonal({
@@ -55,7 +56,7 @@ export function PersonalForm() {
   }
 
   const addLink = () => {
-    setPersonal({ links: [...personal.links, createPersonalLink()] })
+    setPersonal({ links: [...personal.links, createPersonalLink(ui.newLink)] })
   }
 
   const removeLink = (id: string) => {
@@ -81,12 +82,12 @@ export function PersonalForm() {
       const payload = (await response.json()) as { photo?: string; error?: string }
 
       if (!response.ok || !payload.photo) {
-        throw new Error(payload.error ?? "No se pudo subir la foto.")
+        throw new Error(payload.error ?? ui.photoUploadError)
       }
 
       setPersonal({ photo: payload.photo })
     } catch (error) {
-      setPhotoError(error instanceof Error ? error.message : "No se pudo subir la foto.")
+      setPhotoError(error instanceof Error ? error.message : ui.photoUploadError)
     } finally {
       setUploadingPhoto(false)
       event.target.value = ""
@@ -96,10 +97,8 @@ export function PersonalForm() {
   return (
     <section id="informacion" className="scroll-mt-20 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Información personal</h2>
-        <p className="text-sm text-muted-foreground">
-          Datos principales que aparecen en la cabecera y sidebar del CV.
-        </p>
+        <h2 className="text-lg font-semibold">{ui.personalInfo}</h2>
+        <p className="text-sm text-muted-foreground">{ui.personalInfoDescription}</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {fields.map((field) => (
@@ -119,29 +118,27 @@ export function PersonalForm() {
 
       <div className="space-y-3 rounded-lg border p-3">
         <div>
-          <h3 className="text-base font-semibold">Foto</h3>
-          <p className="text-sm text-muted-foreground">
-            Se guarda localmente dentro de public/profile.
-          </p>
+          <h3 className="text-base font-semibold">{ui.photo}</h3>
+          <p className="text-sm text-muted-foreground">{ui.photoDescription}</p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           {photoPreview ? (
             <Image
               src={photoPreview}
-              alt="Foto cargada"
+              alt={ui.loadedPhotoAlt}
               width={96}
               height={120}
               className="h-30 w-24 rounded-md border object-cover"
             />
           ) : (
             <div className="grid h-30 w-24 place-items-center rounded-md border bg-muted text-xs text-muted-foreground">
-              Sin foto
+              {ui.noPhoto}
             </div>
           )}
           <div className="flex flex-wrap items-center gap-3">
             <label className="inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-lg border border-input bg-background px-2.5 text-sm font-medium hover:bg-muted">
               <ImagePlus className="size-4" />
-              {uploadingPhoto ? "Subiendo..." : "Subir foto"}
+              {uploadingPhoto ? ui.uploading : ui.uploadPhoto}
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -156,11 +153,11 @@ export function PersonalForm() {
                 {personal.photo}
               </span>
               <Button type="button" variant="outline" size="sm" onClick={() => setPersonal({ photo: "" })}>
-                Quitar
+                {ui.removePhoto}
               </Button>
             </>
           ) : (
-            <span className="text-sm text-muted-foreground">Sin foto cargada</span>
+            <span className="text-sm text-muted-foreground">{ui.noPhotoUploaded}</span>
           )}
           </div>
         </div>
@@ -170,14 +167,12 @@ export function PersonalForm() {
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold">Enlaces</h3>
-            <p className="text-sm text-muted-foreground">
-              Sitios personales, redes profesionales o cualquier perfil relevante.
-            </p>
+            <h3 className="text-base font-semibold">{ui.links}</h3>
+            <p className="text-sm text-muted-foreground">{ui.linksDescription}</p>
           </div>
           <Button type="button" variant="outline" onClick={addLink}>
             <Plus className="size-4" />
-            Agregar
+            {ui.add}
           </Button>
         </div>
 
@@ -185,7 +180,7 @@ export function PersonalForm() {
           {personal.links.map((link) => (
             <div key={link.id} className="grid gap-3 rounded-lg border p-3 md:grid-cols-[1fr_2fr_auto]">
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Nombre</span>
+                <span className="text-sm font-medium">{ui.linkName}</span>
                 <Input
                   value={link.label}
                   onChange={(event) => updateLink(link.id, { label: event.target.value })}
@@ -204,7 +199,7 @@ export function PersonalForm() {
                   variant="destructive"
                   size="icon-sm"
                   onClick={() => removeLink(link.id)}
-                  aria-label="Eliminar enlace"
+                  aria-label={ui.removeLink}
                 >
                   <Trash2 className="size-4" />
                 </Button>

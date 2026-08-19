@@ -12,36 +12,20 @@ import {
 } from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
+import { getCVData } from "@/lib/cv-repository"
+import { getMessages } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
-const workflow = [
-  {
-    icon: FileText,
-    title: "Edita el contenido",
-    description: "Centraliza perfil, experiencia, educación, habilidades, idiomas y proyectos.",
-  },
-  {
-    icon: LayoutTemplate,
-    title: "Elige la plantilla",
-    description: "Cambia entre estilos Classic y ATS sin tocar la información base.",
-  },
-  {
-    icon: Download,
-    title: "Exporta en PDF",
-    description: "Revisa la vista previa, guarda los cambios y descarga una versión lista para enviar.",
-  },
-]
+export const dynamic = "force-dynamic"
 
-const highlights = [
-  "Información organizada en un solo lugar",
-  "Modo una página o multipágina",
-  "Previsualización en tiempo real",
-  "Exportación PDF desde el servidor",
-]
+export default async function Home() {
+  const data = await getCVData()
+  const { home, ui } = getMessages(data.settings.locale)
+  const workflow = home.workflow.map((item, index) => ({
+    ...item,
+    icon: [FileText, LayoutTemplate, Download][index],
+  }))
 
-const editorSections = ["Perfil", "Experiencia", "Educación", "Habilidades", "Diseño"]
-
-export default function Home() {
   return (
     <main className="min-h-screen bg-[#f7f7f5] text-zinc-950">
       <header className="sticky top-0 z-20 border-b border-zinc-200/80 bg-[#f7f7f5]/90 backdrop-blur">
@@ -53,7 +37,7 @@ export default function Home() {
             CV Builder
           </Link>
           <Link href="/editor" className={buttonVariants({ size: "lg" })}>
-            Abrir editor
+            {home.openEditor}
             <ArrowRight className="size-4" />
           </Link>
         </div>
@@ -63,19 +47,18 @@ export default function Home() {
         <div className="max-w-2xl">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold text-zinc-600 shadow-sm">
             <BadgeCheck className="size-3.5 text-emerald-700" />
-            Editor para currículums profesionales
+            {home.badge}
           </div>
           <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-normal text-zinc-950 md:text-6xl">
-            Crea un CV claro, editable y listo para exportar.
+            {home.headline}
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600 md:text-lg">
-            Una herramienta práctica para mantener tu información profesional organizada,
-            comparar estilos y generar PDFs consistentes sin depender de editores externos.
+            {home.description}
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link href="/editor" className={buttonVariants({ size: "lg", className: "h-11 px-4" })}>
-              Empezar ahora
+              {home.startNow}
               <ArrowRight className="size-4" />
             </Link>
             <a
@@ -86,12 +69,12 @@ export default function Home() {
                 className: "h-11 bg-white px-4",
               })}
             >
-              Ver cómo funciona
+              {home.seeHowItWorks}
             </a>
           </div>
 
           <div className="mt-8 grid gap-2 text-sm text-zinc-600 sm:grid-cols-2">
-            {highlights.map((item) => (
+            {home.highlights.map((item) => (
               <p key={item} className="flex items-center gap-2">
                 <CheckCircle2 className="size-4 text-emerald-700" />
                 {item}
@@ -105,12 +88,12 @@ export default function Home() {
             <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-4 py-3">
               <div>
                 <p className="text-sm font-semibold">CV Builder</p>
-                <p className="text-xs text-zinc-500">Editor estructurado</p>
+                <p className="text-xs text-zinc-500">{home.structuredEditor}</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="hidden items-center gap-1.5 text-xs font-medium text-emerald-700 sm:flex">
                   <CheckCircle2 className="size-3.5" />
-                  Guardado
+                  {ui.saved}
                 </span>
                 <span className="inline-flex h-8 items-center gap-1.5 rounded-md bg-zinc-950 px-3 text-xs font-semibold text-white">
                   <Download className="size-3.5" />
@@ -122,7 +105,7 @@ export default function Home() {
             <div className="grid min-h-[440px] md:grid-cols-[142px_1fr]">
               <aside className="hidden border-r border-zinc-200 bg-white p-3 md:block">
                 <div className="space-y-1">
-                  {editorSections.map((item, index) => (
+                  {home.editorSections.map((item, index) => (
                     <div
                       key={item}
                       className={cn(
@@ -141,7 +124,7 @@ export default function Home() {
                   <div className="rounded-md border border-zinc-200 bg-white p-4">
                     <div className="mb-4 flex items-center gap-2">
                       <Save className="size-4 text-zinc-500" />
-                      <p className="text-sm font-semibold">Información personal</p>
+                      <p className="text-sm font-semibold">{ui.personalInfo}</p>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="h-9 rounded-md border border-zinc-200 bg-zinc-50" />
@@ -152,11 +135,11 @@ export default function Home() {
                   <div className="rounded-md border border-zinc-200 bg-white p-4">
                     <div className="mb-4 flex items-center gap-2">
                       <SlidersHorizontal className="size-4 text-zinc-500" />
-                      <p className="text-sm font-semibold">Diseño</p>
+                      <p className="text-sm font-semibold">{ui.design}</p>
                     </div>
                     <div className="space-y-2">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-400">
-                        Plantilla
+                        {ui.template}
                       </p>
                       {["Classic", "ATS"].map((item, index) => (
                         <span
@@ -232,19 +215,14 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-24 pt-16 md:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:pb-32 lg:pt-20">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-500">
-              Plantillas y control
+              {home.templateControl}
             </p>
             <h2 className="mt-4 text-3xl font-semibold tracking-normal md:text-4xl">
-              Diseña para cada contexto sin duplicar tu CV.
+              {home.templateHeadline}
             </h2>
           </div>
           <div id="control" className="grid scroll-mt-24 gap-4 sm:grid-cols-2">
-            {[
-              "Plantillas para lectura visual o compatibilidad ATS.",
-              "Ajustes de foto, ubicación, enlaces y proyectos.",
-              "Control de una página con sugerencias de espacio.",
-              "Modo multipágina para perfiles con mayor trayectoria.",
-            ].map((item) => (
+            {home.controls.map((item) => (
               <div key={item} className="flex gap-3 rounded-lg border border-zinc-200 bg-white p-5">
                 <MonitorSmartphone className="mt-0.5 size-4 shrink-0 text-zinc-500" />
                 <p className="text-sm leading-6 text-zinc-700">{item}</p>

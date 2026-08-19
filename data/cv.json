@@ -161,6 +161,7 @@
   "settings": {
     "template": "classic",
     "pageMode": "single",
+    "locale": "es",
     "fontSize": "compact",
     "spacing": "compact",
     "showPhoto": true,

@@ -8,6 +8,7 @@ import {
   View,
 } from "@react-pdf/renderer"
 
+import { getMessages } from "@/lib/i18n"
 import type { CVData } from "@/types/cv"
 
 interface ClassicPDFDocumentProps {
@@ -234,8 +235,8 @@ const styles = StyleSheet.create({
 
 type TextStyle = typeof styles.bodyText
 
-function dateRange(startDate?: string, endDate?: string, current?: boolean) {
-  return [startDate, current ? "Actualidad" : endDate].filter(Boolean).join(" - ")
+function dateRange(startDate?: string, endDate?: string, current?: boolean, present = "Actualidad") {
+  return [startDate, current ? present : endDate].filter(Boolean).join(" - ")
 }
 
 function cleanMarkdown(value: string) {
@@ -366,13 +367,13 @@ function Bullets({
   )
 }
 
-function contacts(data: CVData) {
+function contacts(data: CVData, labels: ReturnType<typeof getMessages>["cv"]) {
   return [
     data.settings.showLocation && data.personal.location
-      ? { label: "Ubicación", value: data.personal.location }
+      ? { label: labels.location, value: data.personal.location }
       : null,
-    data.personal.email ? { label: "Correo", value: data.personal.email } : null,
-    data.personal.phone ? { label: "Teléfono", value: data.personal.phone } : null,
+    data.personal.email ? { label: labels.email, value: data.personal.email } : null,
+    data.personal.phone ? { label: labels.phone, value: data.personal.phone } : null,
     ...(data.settings.showLinks
       ? data.personal.links
         .filter((link) => link.label.trim() && link.url.trim())
@@ -382,7 +383,8 @@ function contacts(data: CVData) {
 }
 
 function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
-  const contactLine = contacts(data).map((item) => item.value).join(" | ")
+  const t = getMessages(data.settings.locale).cv
+  const contactLine = contacts(data, t).map((item) => item.value).join(" | ")
   const dense = data.settings.spacing === "compact" || data.settings.fontSize === "compact"
   const bodyText = dense
     ? { ...styles.bodyText, fontSize: 8.4, lineHeight: 1.28 }
@@ -441,13 +443,13 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
 
       <View style={{ gap: dense ? 9 : 13, paddingTop: dense ? 12 : 16 }}>
         {data.summary.trim() ? (
-          <Section title="Resumen profesional" dense={dense}>
+          <Section title={t.professionalSummary} dense={dense}>
             <MarkdownText style={bodyText}>{data.summary}</MarkdownText>
           </Section>
         ) : null}
 
         {data.experience.length > 0 ? (
-          <Section title="Experiencia" dense={dense}>
+          <Section title={t.experience} dense={dense}>
             <View style={dense ? { ...styles.itemGroup, gap: 6 } : styles.itemGroup}>
               {data.experience.map((item) => (
                 <View key={item.id} style={{ gap: dense ? 3 : 4 }}>
@@ -455,8 +457,8 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
                   <Text style={itemSubtitle}>
                     {item.company}
                     {item.location ? ` | ${item.location}` : ""}
-                    {dateRange(item.startDate, item.endDate, item.current)
-                      ? ` | ${dateRange(item.startDate, item.endDate, item.current)}`
+                    {dateRange(item.startDate, item.endDate, item.current, t.present)
+                      ? ` | ${dateRange(item.startDate, item.endDate, item.current, t.present)}`
                       : ""}
                   </Text>
                   {item.description ? (
@@ -465,7 +467,7 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
                   <Bullets items={item.bullets} textStyle={bodyText} />
                   {item.technologies.length > 0 ? (
                     <Text style={smallText}>
-                      <Text style={styles.bold}>Tecnologías: </Text>
+                      <Text style={styles.bold}>{t.technologies}: </Text>
                       {item.technologies.join(", ")}
                     </Text>
                   ) : null}
@@ -476,7 +478,7 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
         ) : null}
 
         {data.settings.showProjects && data.projects.length > 0 ? (
-          <Section title="Proyectos" dense={dense}>
+          <Section title={t.projects} dense={dense}>
             <View style={dense ? { ...styles.itemGroup, gap: 6 } : styles.itemGroup}>
               {data.projects.map((project) => (
                 <View key={project.id} style={{ gap: dense ? 3 : 4 }}>
@@ -492,7 +494,7 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
           </Section>
         ) : null}
 
-        <Section title="Educación" dense={dense}>
+        <Section title={t.education} dense={dense}>
           {data.education.map((item) => (
             <View key={item.id} style={dense ? { ...styles.sideItem, marginBottom: 6 } : styles.sideItem}>
               <Text style={itemTitle}>{item.degree}</Text>
@@ -506,7 +508,7 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
           ))}
         </Section>
 
-        <Section title="Habilidades" dense={dense}>
+        <Section title={t.skills} dense={dense}>
           {data.skills.map((category) => (
             <Text key={category.id} style={smallText}>
               <Text style={styles.bold}>{category.name}: </Text>
@@ -519,7 +521,7 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
           (data.settings.showSpecializations && data.specializations.length > 0)) ? (
           <View style={{ gap: dense ? 9 : 13 }}>
             {data.languages.length > 0 ? (
-              <Section title="Idiomas" dense={dense}>
+              <Section title={t.languages} dense={dense}>
                 <Text style={smallText}>
                   {data.languages.map((item) => `${item.language}: ${item.level}`).join(" | ")}
                 </Text>
@@ -527,7 +529,7 @@ function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
             ) : null}
 
             {data.settings.showSpecializations && data.specializations.length > 0 ? (
-              <Section title="Áreas de especialización" dense={dense}>
+              <Section title={t.areasOfExpertise} dense={dense}>
                 <InlineTagList items={data.specializations} style={smallText} />
               </Section>
             ) : null}
@@ -574,6 +576,8 @@ function MultiPageAtsPDFDocument({ data }: { data: CVData }) {
 }
 
 function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
+  const t = getMessages(data.settings.locale).cv
+
   return (
     <Document
       title={`${data.personal.firstName} ${data.personal.lastName} CV`}
@@ -591,14 +595,14 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
         <View style={styles.header} wrap={false}>
           <View style={styles.headerGrid}>
             <View style={styles.headerContent}>
-              <Text style={styles.eyebrow}>Currículum profesional</Text>
+              <Text style={styles.eyebrow}>{t.professionalResume}</Text>
               <Text style={styles.name}>
                 {data.personal.firstName} {data.personal.lastName}
               </Text>
               <Text style={styles.title}>{data.personal.professionalTitle}</Text>
 
               <View style={styles.contactGrid}>
-                {contacts(data).map((item) => (
+                {contacts(data, t).map((item) => (
                   <Text key={`${item.label}-${item.value}`} style={styles.contactItem}>
                     <Text style={styles.contactLabel}>{item.label}: </Text>
                     {item.value}
@@ -616,12 +620,12 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
 
         <View style={{ gap: 16, paddingTop: 20 }}>
           {data.summary.trim() ? (
-            <Section title="Resumen profesional">
+            <Section title={t.professionalSummary}>
               <MarkdownText style={styles.bodyText}>{data.summary}</MarkdownText>
             </Section>
           ) : null}
 
-          <Section title="Experiencia">
+          <Section title={t.experience}>
             <View style={styles.itemGroup}>
               {data.experience.map((item, index) => (
                 <View
@@ -635,7 +639,7 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
                       {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
                     </View>
                     <Text style={styles.date}>
-                      {dateRange(item.startDate, item.endDate, item.current)}
+                      {dateRange(item.startDate, item.endDate, item.current, t.present)}
                     </Text>
                   </View>
 
@@ -651,7 +655,7 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
           </Section>
 
           {data.settings.showProjects && data.projects.length > 0 ? (
-            <Section title="Proyectos">
+            <Section title={t.projects}>
               <View style={styles.itemGroup}>
                 {data.projects.map((project, index) => (
                   <View
@@ -674,13 +678,15 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
           ) : null}
 
           {data.education.length > 0 ? (
-            <Section title="Educación">
+            <Section title={t.education}>
               <View style={styles.itemGroup}>
                 {data.education.map((item) => (
                   <View key={item.id} style={styles.itemNoBorder}>
                     <Text style={styles.itemTitle}>{item.degree}</Text>
                     <Text style={styles.smallText}>{item.institution}</Text>
-                    <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
+                    <Text style={styles.mutedText}>
+                      {dateRange(item.startDate, item.endDate, false, t.present)}
+                    </Text>
                     {item.description ? (
                       <MarkdownText style={styles.smallText}>{item.description}</MarkdownText>
                     ) : null}
@@ -691,7 +697,7 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
           ) : null}
 
           {data.skills.length > 0 ? (
-            <Section title="Habilidades">
+            <Section title={t.skills}>
               <View style={styles.itemGroup}>
                 {data.skills.map((category) => (
                   <View key={category.id} style={styles.itemNoBorder}>
@@ -704,7 +710,7 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
           ) : null}
 
           {data.languages.length > 0 ? (
-            <Section title="Idiomas">
+            <Section title={t.languages}>
               {data.languages.map((item) => (
                 <View key={item.id} style={styles.languageRow}>
                   <Text style={styles.itemSubtitle}>{item.language}</Text>
@@ -715,7 +721,7 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
           ) : null}
 
           {data.settings.showSpecializations && data.specializations.length > 0 ? (
-            <Section title="Áreas de especialización">
+            <Section title={t.areasOfExpertise}>
               <Specializations items={data.specializations} />
             </Section>
           ) : null}
@@ -726,6 +732,8 @@ function MultiPagePDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
 }
 
 export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps) {
+  const t = getMessages(data.settings.locale).cv
+
   if (data.settings.pageMode === "multi" && data.settings.template === "classic") {
     return <MultiPagePDFDocument data={data} photoPath={photoPath} />
   }
@@ -754,14 +762,14 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
         <View style={styles.header}>
           <View style={styles.headerGrid}>
             <View style={styles.headerContent}>
-              <Text style={styles.eyebrow}>Currículum profesional</Text>
+              <Text style={styles.eyebrow}>{t.professionalResume}</Text>
               <Text style={styles.name}>
                 {data.personal.firstName} {data.personal.lastName}
               </Text>
               <Text style={styles.title}>{data.personal.professionalTitle}</Text>
 
               <View style={styles.contactGrid}>
-                {contacts(data).map((item) => (
+                {contacts(data, t).map((item) => (
                   <Text key={`${item.label}-${item.value}`} style={styles.contactItem}>
                     <Text style={styles.contactLabel}>{item.label}: </Text>
                     {item.value}
@@ -776,7 +784,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
                 <Image src={photoPath} style={styles.photo} />
               ) : (
                 <View style={styles.photoPlaceholder}>
-                  <Text>Foto</Text>
+                  <Text>{t.photo}</Text>
                 </View>
               )
             ) : null}
@@ -786,13 +794,13 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
         <View style={styles.main}>
           <View style={styles.leftColumn}>
             {data.summary.trim() ? (
-              <Section title="Resumen profesional">
+              <Section title={t.professionalSummary}>
                 <MarkdownText style={styles.bodyText}>{data.summary}</MarkdownText>
               </Section>
             ) : null}
 
             {data.settings.showProjects && data.projects.length > 0 ? (
-              <Section title="Proyectos">
+              <Section title={t.projects}>
                 <View style={styles.itemGroup}>
                   {data.projects.map((project) => (
                     <View key={project.id} style={styles.itemNoBorder}>
@@ -811,7 +819,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
               </Section>
             ) : null}
 
-            <Section title="Experiencia">
+            <Section title={t.experience}>
               <View style={styles.itemGroup}>
                 {data.experience.map((item, index) => (
                   <View
@@ -825,7 +833,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
                         {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
                       </View>
                       <Text style={styles.date}>
-                        {dateRange(item.startDate, item.endDate, item.current)}
+                        {dateRange(item.startDate, item.endDate, item.current, t.present)}
                       </Text>
                     </View>
 
@@ -843,12 +851,14 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
 
           <View style={styles.rightColumn}>
             {data.education.length > 0 ? (
-              <Section title="Educación">
+              <Section title={t.education}>
                 {data.education.map((item) => (
                   <View key={item.id} style={styles.sideItem}>
                     <Text style={styles.itemTitle}>{item.degree}</Text>
                     <Text style={styles.smallText}>{item.institution}</Text>
-                    <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
+                    <Text style={styles.mutedText}>
+                      {dateRange(item.startDate, item.endDate, false, t.present)}
+                    </Text>
                     {item.description ? (
                       <MarkdownText style={styles.smallText}>{item.description}</MarkdownText>
                     ) : null}
@@ -858,7 +868,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
             ) : null}
 
             {data.skills.length > 0 ? (
-              <Section title="Habilidades">
+              <Section title={t.skills}>
                 {data.skills.map((category) => (
                   <View key={category.id} style={styles.sideItem}>
                     <Text style={styles.itemSubtitle}>{category.name}</Text>
@@ -869,7 +879,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
             ) : null}
 
             {data.languages.length > 0 ? (
-              <Section title="Idiomas">
+              <Section title={t.languages}>
                 {data.languages.map((item) => (
                   <View key={item.id} style={styles.languageRow}>
                     <Text style={styles.itemSubtitle}>{item.language}</Text>
@@ -880,7 +890,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
             ) : null}
 
             {data.settings.showSpecializations && data.specializations.length > 0 ? (
-              <Section title="Áreas de especialización">
+              <Section title={t.areasOfExpertise}>
                 <Specializations items={data.specializations} />
               </Section>
             ) : null}

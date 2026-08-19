@@ -21,6 +21,7 @@ import { GripVertical, Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useMessages } from "@/hooks/use-messages"
 import { cn } from "@/lib/utils"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 import type { ExperienceItem } from "@/types/cv"
@@ -39,6 +40,7 @@ interface SortableExperienceProps {
 function SortableExperience({ item }: SortableExperienceProps) {
   const updateExperience = useCVEditorStore((state) => state.updateExperience)
   const removeExperience = useCVEditorStore((state) => state.removeExperience)
+  const { ui } = useMessages()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id })
 
@@ -60,7 +62,7 @@ function SortableExperience({ item }: SortableExperienceProps) {
         <button
           type="button"
           className="grid size-8 shrink-0 place-items-center rounded-md border text-muted-foreground"
-          aria-label="Ordenar experiencia"
+          aria-label={ui.reorderExperience}
           {...attributes}
           {...listeners}
         >
@@ -75,7 +77,7 @@ function SortableExperience({ item }: SortableExperienceProps) {
           variant="destructive"
           size="icon-sm"
           onClick={() => removeExperience(item.id)}
-          aria-label="Eliminar experiencia"
+          aria-label={ui.remove}
         >
           <Trash2 className="size-4" />
         </Button>
@@ -83,35 +85,35 @@ function SortableExperience({ item }: SortableExperienceProps) {
 
       <div className="grid gap-3 md:grid-cols-2">
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Empresa</span>
+          <span className="text-sm font-medium">{ui.organization}</span>
           <Input
             value={item.company}
             onChange={(event) => updateExperience(item.id, { company: event.target.value })}
           />
         </label>
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Puesto</span>
+          <span className="text-sm font-medium">{ui.position}</span>
           <Input
             value={item.position}
             onChange={(event) => updateExperience(item.id, { position: event.target.value })}
           />
         </label>
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Ubicación</span>
+          <span className="text-sm font-medium">{ui.location}</span>
           <Input
             value={item.location ?? ""}
             onChange={(event) => updateExperience(item.id, { location: event.target.value })}
           />
         </label>
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Inicio</span>
+          <span className="text-sm font-medium">{ui.start}</span>
           <Input
             value={item.startDate}
             onChange={(event) => updateExperience(item.id, { startDate: event.target.value })}
           />
         </label>
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Fin</span>
+          <span className="text-sm font-medium">{ui.end}</span>
           <Input
             value={item.endDate ?? ""}
             disabled={item.current}
@@ -125,13 +127,13 @@ function SortableExperience({ item }: SortableExperienceProps) {
             onChange={(event) => updateExperience(item.id, { current: event.target.checked })}
             className="size-4 rounded border-input"
           />
-          Trabajo actual
+          {ui.currentJob}
         </label>
       </div>
 
       <label className="mt-3 block space-y-1.5">
-        <span className="text-sm font-medium">Descripción</span>
-        <span className="block text-xs text-muted-foreground">Acepta Markdown básico.</span>
+        <span className="text-sm font-medium">{ui.description}</span>
+        <span className="block text-xs text-muted-foreground">{ui.basicMarkdown}</span>
         <Textarea
           value={item.description ?? ""}
           onChange={(event) => updateExperience(item.id, { description: event.target.value })}
@@ -139,10 +141,8 @@ function SortableExperience({ item }: SortableExperienceProps) {
       </label>
 
       <label className="mt-3 block space-y-1.5">
-        <span className="text-sm font-medium">Puntos</span>
-        <span className="block text-xs text-muted-foreground">
-          Un punto por línea. Puedes usar Markdown básico.
-        </span>
+        <span className="text-sm font-medium">{ui.bullets}</span>
+        <span className="block text-xs text-muted-foreground">{ui.oneItemPerLineMarkdown}</span>
         <Textarea
           value={item.bullets.join("\n")}
           onChange={(event) => updateExperience(item.id, { bullets: toLines(event.target.value) })}
@@ -150,10 +150,8 @@ function SortableExperience({ item }: SortableExperienceProps) {
       </label>
 
       <label className="mt-3 block space-y-1.5">
-        <span className="text-sm font-medium">Tecnologías</span>
-        <span className="block text-xs text-muted-foreground">
-          Una tecnología por línea. Puedes usar comas dentro de cada entrada.
-        </span>
+        <span className="text-sm font-medium">{ui.technologies}</span>
+        <span className="block text-xs text-muted-foreground">{ui.technologiesHelp}</span>
         <Textarea
           value={item.technologies.join("\n")}
           onChange={(event) =>
@@ -169,6 +167,7 @@ export function ExperienceForm() {
   const experience = useCVEditorStore((state) => state.data?.experience ?? [])
   const addExperience = useCVEditorStore((state) => state.addExperience)
   const reorderExperience = useCVEditorStore((state) => state.reorderExperience)
+  const { ui } = useMessages()
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -187,14 +186,12 @@ export function ExperienceForm() {
     <section id="experiencia" className="scroll-mt-20 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Experiencia</h2>
-          <p className="text-sm text-muted-foreground">
-            Ordena y edita tus roles profesionales.
-          </p>
+          <h2 className="text-lg font-semibold">{ui.experience}</h2>
+          <p className="text-sm text-muted-foreground">{ui.experienceDescription}</p>
         </div>
         <Button type="button" onClick={addExperience}>
           <Plus className="size-4" />
-          Agregar
+          {ui.add}
         </Button>
       </div>
 

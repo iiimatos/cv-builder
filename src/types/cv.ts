@@ -1,6 +1,9 @@
 export type CVTemplate = "classic" | "ats"
 
+export type CVLocale = "es" | "en"
+
 export interface CVSettings {
+  locale: CVLocale
   template: CVTemplate
   pageMode: "single" | "multi"
   fontSize: "compact" | "normal" | "large"

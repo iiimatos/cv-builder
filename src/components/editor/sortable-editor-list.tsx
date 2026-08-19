@@ -19,6 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { GripVertical } from "lucide-react"
 
+import { useMessages } from "@/hooks/use-messages"
 import { cn } from "@/lib/utils"
 
 interface SortableEditorListProps<T extends { id: string }> {
@@ -42,6 +43,7 @@ function SortableItem<T extends { id: string }>({
   description,
   children,
 }: SortableItemProps<T>) {
+  const { ui } = useMessages()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id })
 
@@ -60,7 +62,7 @@ function SortableItem<T extends { id: string }>({
         <button
           type="button"
           className="grid size-8 shrink-0 place-items-center rounded-md border text-muted-foreground"
-          aria-label="Ordenar elemento"
+          aria-label={ui.reorderElement}
           {...attributes}
           {...listeners}
         >

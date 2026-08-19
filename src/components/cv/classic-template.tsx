@@ -1,9 +1,10 @@
 import type { ReactNode, RefObject } from "react"
 import Image from "next/image"
-import { Globe2, LinkIcon, Mail, MapPin, Phone } from "lucide-react"
+import { Globe2, LinkIcon, Mail, MapPin, Phone, type LucideIcon } from "lucide-react"
 
 import { A4Page } from "@/components/cv/a4-page"
 import { CVMarkdown } from "@/components/cv/cv-markdown"
+import { getMessages } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import type { CVData } from "@/types/cv"
 
@@ -17,6 +18,12 @@ interface SectionProps {
   children: ReactNode
   className?: string
   dense?: boolean
+}
+
+interface ContactItem {
+  icon: LucideIcon
+  label: string
+  value: string
 }
 
 function Section({ title, children, className, dense = false }: SectionProps) {
@@ -57,32 +64,38 @@ function SpecializationsList({ items, dense = false }: { items: string[]; dense?
   )
 }
 
-function dateRange(startDate?: string, endDate?: string, current?: boolean) {
-  return [startDate, current ? "Actualidad" : endDate].filter(Boolean).join(" - ")
+function dateRange(startDate?: string, endDate?: string, current?: boolean, present = "Actualidad") {
+  return [startDate, current ? present : endDate].filter(Boolean).join(" - ")
 }
 
-function contactItems(data: CVData) {
-  return [
-    data.settings.showLocation && data.personal.location
-      ? { icon: MapPin, label: "Ubicación", value: data.personal.location }
-      : null,
-    data.personal.email
-      ? { icon: Mail, label: "Correo", value: data.personal.email }
-      : null,
-    data.personal.phone
-      ? { icon: Phone, label: "Teléfono", value: data.personal.phone }
-      : null,
-  ].filter((item): item is { icon: typeof MapPin; label: string; value: string } => Boolean(item))
+function contactItems(data: CVData, labels: ReturnType<typeof getMessages>["cv"]): ContactItem[] {
+  const items: ContactItem[] = []
+
+  if (data.settings.showLocation && data.personal.location) {
+    items.push({ icon: MapPin, label: labels.location, value: data.personal.location })
+  }
+
+  if (data.personal.email) {
+    items.push({ icon: Mail, label: labels.email, value: data.personal.email })
+  }
+
+  if (data.personal.phone) {
+    items.push({ icon: Phone, label: labels.phone, value: data.personal.phone })
+  }
+
+  return items
 }
 
 function ClassicExperienceItem({
   item,
   dense,
   bodyText,
+  labels,
 }: {
   item: CVData["experience"][number]
   dense: boolean
   bodyText: string
+  labels: ReturnType<typeof getMessages>["cv"]
 }) {
   return (
     <article
@@ -104,7 +117,7 @@ function ClassicExperienceItem({
           ) : null}
         </div>
         <p className="text-[10px] font-medium leading-4 text-zinc-500">
-          {dateRange(item.startDate, item.endDate, item.current)}
+          {dateRange(item.startDate, item.endDate, item.current, labels.present)}
         </p>
       </div>
 
@@ -128,7 +141,9 @@ function ClassicExperienceItem({
 }
 
 export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
-  const contacts = contactItems(data)
+  const messages = getMessages(data.settings.locale)
+  const t = messages.cv
+  const contacts = contactItems(data, t)
   const links = data.settings.showLinks
     ? data.personal.links.filter((link) => link.label.trim() && link.url.trim())
     : []
@@ -157,7 +172,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
             <div className="grid items-start gap-5 md:grid-cols-[1fr_38mm]">
               <div className="min-w-0">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-                  Currículum profesional
+                  {t.professionalResume}
                 </p>
                 <h1 className="mt-2 text-[38px] font-semibold leading-[0.95] tracking-normal text-zinc-950">
                   {data.personal.firstName} {data.personal.lastName}
@@ -189,14 +204,14 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
                   {photoSrc ? (
                     <Image
                       src={photoSrc}
-                      alt={`Foto de ${data.personal.firstName} ${data.personal.lastName}`}
+                      alt={`${t.photoOf} ${data.personal.firstName} ${data.personal.lastName}`}
                       width={144}
                       height={176}
                       className="h-[42mm] w-[34mm] rounded-md border border-zinc-200 object-cover shadow-sm"
                     />
                   ) : (
                     <div className="grid h-[42mm] w-[34mm] place-items-center rounded-md border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                      Foto
+                      {t.photo}
                     </div>
                   )}
                 </div>
@@ -206,7 +221,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
 
           <main className={cn("flex-1 pt-5", sectionSpace)}>
             {data.summary.trim() ? (
-              <Section title="Resumen profesional" dense={dense}>
+              <Section title={t.professionalSummary} dense={dense}>
                 <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
                   {data.summary}
                 </CVMarkdown>
@@ -214,8 +229,13 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
             ) : null}
 
             {firstExperience ? (
-              <Section title="Experiencia" dense={dense}>
-                <ClassicExperienceItem item={firstExperience} dense={dense} bodyText={bodyText} />
+              <Section title={t.experience} dense={dense}>
+                <ClassicExperienceItem
+                  item={firstExperience}
+                  dense={dense}
+                  bodyText={bodyText}
+                  labels={t}
+                />
               </Section>
             ) : null}
           </main>
@@ -227,7 +247,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
           <article className="flex h-[297mm] flex-col overflow-hidden bg-white px-10 py-8">
             <main className={sectionSpace}>
               {remainingExperience.length > 0 ? (
-                <Section title="Experiencia" dense={dense}>
+                <Section title={t.experience} dense={dense}>
                   <div className={dense ? "space-y-3.5" : "space-y-4"}>
                     {remainingExperience.map((item) => (
                       <ClassicExperienceItem
@@ -235,6 +255,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
                         item={item}
                         dense={dense}
                         bodyText={bodyText}
+                        labels={t}
                       />
                     ))}
                   </div>
@@ -242,7 +263,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
               ) : null}
 
               {showProjects ? (
-                <Section title="Proyectos" dense={dense}>
+                <Section title={t.projects} dense={dense}>
                   <div className={dense ? "space-y-3" : "space-y-4"}>
                     {data.projects.map((project) => (
                       <article key={project.id} className="space-y-2 break-inside-avoid">
@@ -275,14 +296,14 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
 
               <div className="grid gap-6 md:grid-cols-2">
                 {data.education.length > 0 ? (
-                  <Section title="Educación" dense={dense}>
+                  <Section title={t.education} dense={dense}>
                     <div className={dense ? "space-y-3" : "space-y-4"}>
                       {data.education.map((item) => (
                         <article key={item.id} className="break-inside-avoid">
                           <h3 className="text-[12px] font-bold leading-4 text-zinc-950">{item.degree}</h3>
                           <p className={cn(smallText, "text-zinc-700")}>{item.institution}</p>
                           <p className="text-[10px] font-medium leading-4 text-zinc-500">
-                            {dateRange(item.startDate, item.endDate)}
+                            {dateRange(item.startDate, item.endDate, false, t.present)}
                           </p>
                           {item.description ? (
                             <CVMarkdown className={cn("mt-1 text-zinc-600", smallText)}>
@@ -297,7 +318,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
 
                 <div className={dense ? "space-y-4" : "space-y-5"}>
                   {data.skills.length > 0 ? (
-                    <Section title="Habilidades" dense={dense}>
+                    <Section title={t.skills} dense={dense}>
                       <div className={dense ? "space-y-2.5" : "space-y-3"}>
                         {data.skills.map((category) => (
                           <div key={category.id} className="space-y-1.5 break-inside-avoid">
@@ -312,7 +333,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
                   ) : null}
 
                   {data.languages.length > 0 ? (
-                    <Section title="Idiomas" dense={dense}>
+                    <Section title={t.languages} dense={dense}>
                       <div className="space-y-1.5">
                         {data.languages.map((item) => (
                           <p key={item.id} className="flex justify-between gap-3 text-[11px] leading-4 text-zinc-700">
@@ -325,7 +346,7 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
                   ) : null}
 
                   {showSpecializations ? (
-                    <Section title="Áreas de especialización" dense={dense}>
+                    <Section title={t.areasOfExpertise} dense={dense}>
                       <SpecializationsList items={data.specializations} dense={dense} />
                     </Section>
                   ) : null}
@@ -340,7 +361,9 @@ export function MultiPageClassicTemplate({ data, pageRef }: ClassicTemplateProps
 }
 
 export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
-  const contacts = contactItems(data)
+  const messages = getMessages(data.settings.locale)
+  const t = messages.cv
+  const contacts = contactItems(data, t)
   const links = data.settings.showLinks
     ? data.personal.links.filter((link) => link.label.trim() && link.url.trim())
     : []
@@ -360,7 +383,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
           <div className="grid items-start gap-5 md:grid-cols-[1fr_38mm]">
             <div className="min-w-0">
               <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-                Currículum profesional
+                {t.professionalResume}
               </p>
               <h1 className="mt-2 text-[38px] font-semibold leading-[0.95] tracking-normal text-zinc-950">
                 {data.personal.firstName} {data.personal.lastName}
@@ -392,14 +415,14 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
                 {photoSrc ? (
                   <Image
                     src={photoSrc}
-                    alt={`Foto de ${data.personal.firstName} ${data.personal.lastName}`}
+                    alt={`${t.photoOf} ${data.personal.firstName} ${data.personal.lastName}`}
                     width={144}
                     height={176}
                     className="h-[42mm] w-[34mm] rounded-md border border-zinc-200 object-cover shadow-sm"
                   />
                 ) : (
                   <div className="grid h-[42mm] w-[34mm] place-items-center rounded-md border border-zinc-200 bg-zinc-50 text-[9px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-                    Foto
+                    {t.photo}
                   </div>
                 )}
               </div>
@@ -410,7 +433,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
         <main className="grid flex-1 gap-6 pt-5 md:grid-cols-[1fr_68mm]">
           <div className={sectionSpace}>
             {data.summary.trim() ? (
-              <Section title="Resumen profesional" dense={dense}>
+              <Section title={t.professionalSummary} dense={dense}>
                 <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
                   {data.summary}
                 </CVMarkdown>
@@ -418,7 +441,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
             ) : null}
 
             {data.settings.showProjects && data.projects.length > 0 ? (
-              <Section title="Proyectos" dense={dense}>
+              <Section title={t.projects} dense={dense}>
                 <div className={dense ? "space-y-3" : "space-y-4"}>
                   {data.projects.map((project) => (
                     <article key={project.id} className="space-y-2">
@@ -449,7 +472,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
               </Section>
             ) : null}
 
-            <Section title="Experiencia" dense={dense}>
+            <Section title={t.experience} dense={dense}>
               <div className={dense ? "space-y-3.5" : "space-y-4"}>
                 {data.experience.map((item) => (
                   <ClassicExperienceItem
@@ -457,6 +480,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
                     item={item}
                     dense={dense}
                     bodyText={bodyText}
+                    labels={t}
                   />
                 ))}
               </div>
@@ -466,14 +490,14 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
 
           <aside className={cn("border-l border-zinc-200 pl-5", dense ? "space-y-4" : "space-y-5")}>
             {data.education.length > 0 ? (
-              <Section title="Educación" dense={dense}>
+              <Section title={t.education} dense={dense}>
                 <div className={dense ? "space-y-3" : "space-y-4"}>
                   {data.education.map((item) => (
                     <article key={item.id}>
                       <h3 className="text-[12px] font-bold leading-4 text-zinc-950">{item.degree}</h3>
                       <p className={cn(smallText, "text-zinc-700")}>{item.institution}</p>
                       <p className="text-[10px] font-medium leading-4 text-zinc-500">
-                        {dateRange(item.startDate, item.endDate)}
+                        {dateRange(item.startDate, item.endDate, false, t.present)}
                       </p>
                       {item.description ? (
                         <CVMarkdown className={cn("mt-1 text-zinc-600", smallText)}>
@@ -487,7 +511,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
             ) : null}
 
             {data.skills.length > 0 ? (
-              <Section title="Habilidades" dense={dense}>
+              <Section title={t.skills} dense={dense}>
                 <div className={dense ? "space-y-2.5" : "space-y-3"}>
                   {data.skills.map((category) => (
                     <div key={category.id} className="space-y-1.5">
@@ -502,7 +526,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
             ) : null}
 
             {data.languages.length > 0 ? (
-              <Section title="Idiomas" dense={dense}>
+              <Section title={t.languages} dense={dense}>
                 <div className="space-y-1.5">
                   {data.languages.map((item) => (
                     <p key={item.id} className="flex justify-between gap-3 text-[11px] leading-4 text-zinc-700">
@@ -515,7 +539,7 @@ export function ClassicTemplate({ data, pageRef }: ClassicTemplateProps) {
             ) : null}
 
             {data.settings.showSpecializations && data.specializations.length > 0 ? (
-              <Section title="Áreas de especialización" dense={dense}>
+              <Section title={t.areasOfExpertise} dense={dense}>
                 <SpecializationsList items={data.specializations} dense={dense} />
               </Section>
             ) : null}

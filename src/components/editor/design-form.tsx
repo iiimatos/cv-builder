@@ -1,26 +1,26 @@
 "use client"
 
+import { useMessages } from "@/hooks/use-messages"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 import type { CVSettings } from "@/types/cv"
 
 export function DesignForm() {
   const settings = useCVEditorStore((state) => state.data?.settings)
   const updateSettings = useCVEditorStore((state) => state.updateSettings)
+  const { ui } = useMessages()
 
   if (!settings) return null
 
   return (
     <section id="diseno" className="scroll-mt-20 space-y-4">
       <div>
-        <h2 className="text-lg font-semibold">Diseño</h2>
-        <p className="text-sm text-muted-foreground">
-          Ajustes rápidos para controlar qué aparece en el CV y cuánto espacio ocupa.
-        </p>
+        <h2 className="text-lg font-semibold">{ui.design}</h2>
+        <p className="text-sm text-muted-foreground">{ui.designDescription}</p>
       </div>
 
       <div className="grid gap-4 rounded-lg border bg-background p-4 md:grid-cols-2">
         <label className="space-y-1.5 md:col-span-2">
-          <span className="text-sm font-medium">Plantilla</span>
+          <span className="text-sm font-medium">{ui.template}</span>
           <select
             value={settings.template}
             onChange={(event) =>
@@ -34,7 +34,7 @@ export function DesignForm() {
         </label>
 
         <label className="space-y-1.5 md:col-span-2">
-          <span className="text-sm font-medium">Modo de página</span>
+          <span className="text-sm font-medium">{ui.pageMode}</span>
           <select
             value={settings.pageMode}
             onChange={(event) =>
@@ -42,17 +42,14 @@ export function DesignForm() {
             }
             className="h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm"
           >
-            <option value="single">Una página estricta</option>
-            <option value="multi">Multipágina completa</option>
+            <option value="single">{ui.singlePageMode}</option>
+            <option value="multi">{ui.fullPageMode}</option>
           </select>
-          <p className="text-xs text-muted-foreground">
-            Una página exige que todo quepa en A4. Multipágina conserva el contenido completo en
-            páginas adicionales.
-          </p>
+          <p className="text-xs text-muted-foreground">{ui.fullPageModeDescription}</p>
         </label>
 
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Tamaño de texto</span>
+          <span className="text-sm font-medium">{ui.textSize}</span>
           <select
             value={settings.fontSize}
             onChange={(event) =>
@@ -60,14 +57,14 @@ export function DesignForm() {
             }
             className="h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm"
           >
-            <option value="compact">Compacto</option>
-            <option value="normal">Normal</option>
-            <option value="large">Grande</option>
+            <option value="compact">{ui.compact}</option>
+            <option value="normal">{ui.normal}</option>
+            <option value="large">{ui.large}</option>
           </select>
         </label>
 
         <label className="space-y-1.5">
-          <span className="text-sm font-medium">Espaciado</span>
+          <span className="text-sm font-medium">{ui.spacing}</span>
           <select
             value={settings.spacing}
             onChange={(event) =>
@@ -75,9 +72,9 @@ export function DesignForm() {
             }
             className="h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm"
           >
-            <option value="compact">Compacto</option>
-            <option value="normal">Normal</option>
-            <option value="comfortable">Cómodo</option>
+            <option value="compact">{ui.compact}</option>
+            <option value="normal">{ui.normal}</option>
+            <option value="comfortable">{ui.comfortable}</option>
           </select>
         </label>
 
@@ -88,7 +85,7 @@ export function DesignForm() {
             onChange={(event) => updateSettings({ showPhoto: event.target.checked })}
             className="size-4 rounded border-input"
           />
-          Mostrar foto
+          {ui.showPhoto}
         </label>
 
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -98,7 +95,7 @@ export function DesignForm() {
             onChange={(event) => updateSettings({ showLocation: event.target.checked })}
             className="size-4 rounded border-input"
           />
-          Mostrar ubicación
+          {ui.showLocation}
         </label>
 
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -108,7 +105,7 @@ export function DesignForm() {
             onChange={(event) => updateSettings({ showLinks: event.target.checked })}
             className="size-4 rounded border-input"
           />
-          Mostrar enlaces
+          {ui.showLinks}
         </label>
 
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -118,7 +115,7 @@ export function DesignForm() {
             onChange={(event) => updateSettings({ showProjects: event.target.checked })}
             className="size-4 rounded border-input"
           />
-          Mostrar proyectos
+          {ui.showProjects}
         </label>
 
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -128,7 +125,7 @@ export function DesignForm() {
             onChange={(event) => updateSettings({ showSpecializations: event.target.checked })}
             className="size-4 rounded border-input"
           />
-          Mostrar áreas de especialización
+          {ui.showSpecializations}
         </label>
       </div>
     </section>

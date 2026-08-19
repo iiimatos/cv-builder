@@ -2,6 +2,7 @@ import type { RefObject } from "react"
 
 import { A4Page } from "@/components/cv/a4-page"
 import { CVMarkdown } from "@/components/cv/cv-markdown"
+import { getMessages } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import type { CVData } from "@/types/cv"
 
@@ -10,10 +11,9 @@ interface AtsTemplateProps {
   pageRef?: RefObject<HTMLElement | null>
 }
 
-function dateRange(startDate?: string, endDate?: string, current?: boolean) {
-  return [startDate, current ? "Actualidad" : endDate].filter(Boolean).join(" - ")
+function dateRange(startDate?: string, endDate?: string, current?: boolean, present = "Actualidad") {
+  return [startDate, current ? present : endDate].filter(Boolean).join(" - ")
 }
-
 function Section({
   title,
   children,
@@ -52,10 +52,12 @@ function InlineList({ items, className }: { items: string[]; className?: string 
 function ExperienceItem({
   item,
   bodyText,
+  labels,
   dense = false,
 }: {
   item: CVData["experience"][number]
   bodyText: string
+  labels: ReturnType<typeof getMessages>["cv"]
   dense?: boolean
 }) {
   return (
@@ -76,8 +78,8 @@ function ExperienceItem({
       >
         {item.company}
         {item.location ? ` | ${item.location}` : ""}
-        {dateRange(item.startDate, item.endDate, item.current)
-          ? ` | ${dateRange(item.startDate, item.endDate, item.current)}`
+        {dateRange(item.startDate, item.endDate, item.current, labels.present)
+          ? ` | ${dateRange(item.startDate, item.endDate, item.current, labels.present)}`
           : ""}
       </p>
       {item.description ? (
@@ -99,7 +101,7 @@ function ExperienceItem({
             dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5"
           )}
         >
-          <span className="font-bold text-zinc-950">Tecnologías: </span>
+          <span className="font-bold text-zinc-950">{labels.technologies}: </span>
           {item.technologies.join(", ")}
         </p>
       ) : null}
@@ -128,6 +130,9 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
     data.languages.length > 0 ||
     showSpecializations
 
+  const messages = getMessages(data.settings.locale)
+  const t = messages.cv
+
   return (
     <div className="space-y-8">
       <A4Page>
@@ -149,7 +154,7 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
 
           <main className={cn("pt-6", sectionSpace)}>
             {data.summary.trim() ? (
-              <Section title="Resumen profesional">
+              <Section title={t.professionalSummary}>
                 <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
                   {data.summary}
                 </CVMarkdown>
@@ -157,8 +162,8 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
             ) : null}
 
             {firstExperience ? (
-              <Section title="Experiencia">
-                <ExperienceItem item={firstExperience} bodyText={bodyText} />
+              <Section title={t.experience}>
+                <ExperienceItem item={firstExperience} bodyText={bodyText} labels={t} />
               </Section>
             ) : null}
           </main>
@@ -170,17 +175,17 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
           <article className="h-[297mm] overflow-hidden bg-white px-12 py-10 text-zinc-950">
             <main className={sectionSpace}>
               {remainingExperience.length > 0 ? (
-                <Section title="Experiencia">
+                <Section title={t.experience}>
                   <div className="space-y-3.5">
                     {remainingExperience.map((item) => (
-                      <ExperienceItem key={item.id} item={item} bodyText={bodyText} />
+                      <ExperienceItem key={item.id} item={item} bodyText={bodyText} labels={t} />
                     ))}
                   </div>
                 </Section>
               ) : null}
 
               {showProjects ? (
-                <Section title="Proyectos">
+                <Section title={t.projects}>
                   <div className="space-y-2.5">
                     {data.projects.map((project) => (
                       <article key={project.id} className="space-y-1 break-inside-avoid">
@@ -198,7 +203,7 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
               ) : null}
 
               <div className="space-y-4">
-                <Section title="Educación">
+                <Section title={t.education}>
                   <div className="space-y-2.5">
                     {data.education.map((item) => (
                       <article key={item.id} className="break-inside-avoid">
@@ -213,7 +218,7 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
                     ))}
                   </div>
                 </Section>
-                <Section title="Habilidades">
+                <Section title={t.skills}>
                   <div className="space-y-1">
                     {data.skills.map((category) => (
                       <p key={category.id} className="text-[11px] leading-5 text-zinc-800">
@@ -228,7 +233,7 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
               {(data.languages.length > 0 || showSpecializations) ? (
                 <div className="space-y-4">
                   {data.languages.length > 0 ? (
-                    <Section title="Idiomas">
+                    <Section title={t.languages}>
                       <InlineList
                         items={data.languages.map((item) => `${item.language}: ${item.level}`)}
                       />
@@ -236,7 +241,7 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
                   ) : null}
 
                   {showSpecializations ? (
-                    <Section title="Áreas de especialización">
+                    <Section title={t.areasOfExpertise}>
                       <InlineList items={data.specializations} />
                     </Section>
                   ) : null}
@@ -260,6 +265,8 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
   const dense = data.settings.spacing === "compact" || data.settings.fontSize === "compact"
   const bodyText = dense ? "text-[10px] leading-[1.35]" : "text-[12px] leading-[1.55]"
   const sectionSpace = dense ? "space-y-2.5" : "space-y-4"
+  const messages = getMessages(data.settings.locale)
+  const t = messages.cv
 
   return (
     <A4Page>
@@ -299,21 +306,27 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
 
         <main className={cn(dense ? "pt-4" : "pt-6", sectionSpace)}>
           {data.summary.trim() ? (
-            <Section title="Resumen profesional" dense={dense}>
+            <Section title={t.professionalSummary} dense={dense}>
               <CVMarkdown className={cn(bodyText, "text-zinc-700")}>{data.summary}</CVMarkdown>
             </Section>
           ) : null}
 
-          <Section title="Experiencia" dense={dense}>
+          <Section title={t.experience} dense={dense}>
             <div className={dense ? "space-y-2.5" : "space-y-3.5"}>
               {data.experience.map((item) => (
-                <ExperienceItem key={item.id} item={item} bodyText={bodyText} dense={dense} />
+                <ExperienceItem
+                  key={item.id}
+                  item={item}
+                  bodyText={bodyText}
+                  labels={t}
+                  dense={dense}
+                />
               ))}
             </div>
           </Section>
 
           {data.settings.showProjects && data.projects.length > 0 ? (
-            <Section title="Proyectos" dense={dense}>
+            <Section title={t.projects} dense={dense}>
               <div className={dense ? "space-y-2" : "space-y-2.5"}>
                 {data.projects.map((project) => (
                   <article key={project.id} className="space-y-1">
@@ -336,7 +349,7 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
           ) : null}
 
           <div className={dense ? "space-y-2.5" : "space-y-4"}>
-            <Section title="Educación" dense={dense}>
+            <Section title={t.education} dense={dense}>
               <div className={dense ? "space-y-1.5" : "space-y-2.5"}>
                 {data.education.map((item) => (
                   <article key={item.id}>
@@ -363,7 +376,7 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
                 ))}
               </div>
             </Section>
-            <Section title="Habilidades" dense={dense}>
+            <Section title={t.skills} dense={dense}>
               <div className="space-y-1">
                 {data.skills.map((category) => (
                   <p
@@ -385,7 +398,7 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
             (data.settings.showSpecializations && data.specializations.length > 0)) ? (
             <div className={dense ? "space-y-2.5" : "space-y-4"}>
               {data.languages.length > 0 ? (
-                <Section title="Idiomas" dense={dense}>
+                <Section title={t.languages} dense={dense}>
                   <InlineList
                     items={data.languages.map((item) => `${item.language}: ${item.level}`)}
                     className={dense ? "text-[10px] leading-[1.35]" : undefined}
@@ -394,7 +407,7 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
               ) : null}
 
               {data.settings.showSpecializations && data.specializations.length > 0 ? (
-                <Section title="Áreas de especialización" dense={dense}>
+                <Section title={t.areasOfExpertise} dense={dense}>
                   <InlineList
                     items={data.specializations}
                     className={dense ? "text-[10px] leading-[1.35]" : undefined}

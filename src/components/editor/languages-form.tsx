@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react"
 import { SortableEditorList } from "@/components/editor/sortable-editor-list"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useMessages } from "@/hooks/use-messages"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 
 export function LanguagesForm() {
@@ -13,19 +14,18 @@ export function LanguagesForm() {
   const updateLanguage = useCVEditorStore((state) => state.updateLanguage)
   const removeLanguage = useCVEditorStore((state) => state.removeLanguage)
   const reorderLanguage = useCVEditorStore((state) => state.reorderLanguage)
+  const { ui } = useMessages()
 
   return (
     <section id="idiomas" className="scroll-mt-20 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Idiomas</h2>
-          <p className="text-sm text-muted-foreground">
-            Idiomas y nivel de dominio.
-          </p>
+          <h2 className="text-lg font-semibold">{ui.languages}</h2>
+          <p className="text-sm text-muted-foreground">{ui.languagesDescription}</p>
         </div>
         <Button type="button" onClick={addLanguage}>
           <Plus className="size-4" />
-          Agregar
+          {ui.add}
         </Button>
       </div>
 
@@ -38,14 +38,14 @@ export function LanguagesForm() {
           <div className="space-y-3">
             <div className="grid gap-3 md:grid-cols-2">
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Idioma</span>
+                <span className="text-sm font-medium">{ui.language}</span>
                 <Input
                   value={item.language}
                   onChange={(event) => updateLanguage(item.id, { language: event.target.value })}
                 />
               </label>
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Nivel</span>
+                <span className="text-sm font-medium">{ui.level}</span>
                 <Input
                   value={item.level}
                   onChange={(event) => updateLanguage(item.id, { level: event.target.value })}
@@ -59,7 +59,7 @@ export function LanguagesForm() {
               onClick={() => removeLanguage(item.id)}
             >
               <Trash2 className="size-4" />
-              Eliminar
+              {ui.remove}
             </Button>
           </div>
         )}

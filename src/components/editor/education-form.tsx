@@ -6,6 +6,7 @@ import { SortableEditorList } from "@/components/editor/sortable-editor-list"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { useMessages } from "@/hooks/use-messages"
 import { useCVEditorStore } from "@/stores/use-cv-editor-store"
 
 export function EducationForm() {
@@ -14,19 +15,18 @@ export function EducationForm() {
   const updateEducation = useCVEditorStore((state) => state.updateEducation)
   const removeEducation = useCVEditorStore((state) => state.removeEducation)
   const reorderEducation = useCVEditorStore((state) => state.reorderEducation)
+  const { ui } = useMessages()
 
   return (
     <section id="educacion" className="scroll-mt-20 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Educación</h2>
-          <p className="text-sm text-muted-foreground">
-            Formación académica, certificaciones o estudios relevantes.
-          </p>
+          <h2 className="text-lg font-semibold">{ui.education}</h2>
+          <p className="text-sm text-muted-foreground">{ui.educationDescription}</p>
         </div>
         <Button type="button" onClick={addEducation}>
           <Plus className="size-4" />
-          Agregar
+          {ui.add}
         </Button>
       </div>
 
@@ -39,7 +39,7 @@ export function EducationForm() {
           <div className="space-y-3">
             <div className="grid gap-3 md:grid-cols-2">
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Institución</span>
+                <span className="text-sm font-medium">{ui.institution}</span>
                 <Input
                   value={item.institution}
                   onChange={(event) =>
@@ -48,14 +48,14 @@ export function EducationForm() {
                 />
               </label>
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Título o formación</span>
+                <span className="text-sm font-medium">{ui.degree}</span>
                 <Input
                   value={item.degree}
                   onChange={(event) => updateEducation(item.id, { degree: event.target.value })}
                 />
               </label>
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Inicio</span>
+                <span className="text-sm font-medium">{ui.start}</span>
                 <Input
                   value={item.startDate ?? ""}
                   onChange={(event) =>
@@ -64,7 +64,7 @@ export function EducationForm() {
                 />
               </label>
               <label className="space-y-1.5">
-                <span className="text-sm font-medium">Fin</span>
+                <span className="text-sm font-medium">{ui.end}</span>
                 <Input
                   value={item.endDate ?? ""}
                   onChange={(event) => updateEducation(item.id, { endDate: event.target.value })}
@@ -72,8 +72,8 @@ export function EducationForm() {
               </label>
             </div>
             <label className="block space-y-1.5">
-              <span className="text-sm font-medium">Descripción</span>
-              <span className="block text-xs text-muted-foreground">Acepta Markdown básico.</span>
+              <span className="text-sm font-medium">{ui.description}</span>
+              <span className="block text-xs text-muted-foreground">{ui.basicMarkdown}</span>
               <Textarea
                 value={item.description ?? ""}
                 onChange={(event) =>
@@ -88,7 +88,7 @@ export function EducationForm() {
               onClick={() => removeEducation(item.id)}
             >
               <Trash2 className="size-4" />
-              Eliminar
+              {ui.remove}
             </Button>
           </div>
         )}
