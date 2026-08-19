@@ -121,6 +121,8 @@ function OverflowMeter({
   overflowing: boolean
   status: "ok" | "near" | "overflow"
 }) {
+  const updateSettings = useCVEditorStore((state) => state.updateSettings)
+
   if (pageMode === "multi") {
     return (
       <div className="rounded-lg border bg-white p-3 text-sm shadow-sm">
@@ -129,8 +131,17 @@ function OverflowMeter({
           <span className="font-semibold text-emerald-700">Activo</span>
         </div>
         <p className="text-xs font-medium text-zinc-600">
-          El PDF puede continuar en páginas adicionales. El medidor de una página queda desactivado.
+          Versión completa: el contenido se distribuye en páginas adicionales.
         </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="mt-3 h-8 w-full"
+          onClick={() => updateSettings({ pageMode: "single" })}
+        >
+          Probar una página
+        </Button>
       </div>
     )
   }
@@ -161,12 +172,23 @@ function OverflowMeter({
         <div className={`h-full ${barTone}`} style={{ width: barWidth }} />
       </div>
       {overflowing ? (
-        <p className="mt-2 text-xs font-medium text-destructive">
-          El contenido excede una página A4 por aproximadamente {overflowPixels}px.
-        </p>
+        <div className="mt-2 space-y-2">
+          <p className="text-xs font-medium text-destructive">
+            Excede una página A4 por aproximadamente {overflowPixels}px.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 w-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => updateSettings({ pageMode: "multi" })}
+          >
+            Pasar a multipágina
+          </Button>
+        </div>
       ) : status === "near" ? (
         <p className="mt-2 text-xs font-medium text-amber-700">
-          La página está casi llena, pero todavía entra dentro del margen esperado.
+          Una página estricta: está casi llena, pero todavía entra.
         </p>
       ) : null}
     </div>

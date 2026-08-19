@@ -381,7 +381,7 @@ function contacts(data: CVData) {
   ].filter((item): item is { label: string; value: string } => Boolean(item))
 }
 
-function AtsPDFPage({ data }: { data: CVData }) {
+function AtsPDFPage({ data, wrap = true }: { data: CVData; wrap?: boolean }) {
   const contactLine = contacts(data).map((item) => item.value).join(" | ")
   const dense = data.settings.spacing === "compact" || data.settings.fontSize === "compact"
   const bodyText = dense
@@ -400,6 +400,7 @@ function AtsPDFPage({ data }: { data: CVData }) {
   return (
     <Page
       size="A4"
+      wrap={wrap}
       style={{
         ...styles.page,
         paddingHorizontal: dense ? 32 : 44,
@@ -445,30 +446,51 @@ function AtsPDFPage({ data }: { data: CVData }) {
           </Section>
         ) : null}
 
-        <Section title="Experiencia" dense={dense}>
-          <View style={dense ? { ...styles.itemGroup, gap: 6 } : styles.itemGroup}>
-            {data.experience.map((item) => (
-              <View key={item.id} style={{ gap: dense ? 3 : 4 }}>
-                <Text style={itemTitle}>{item.position}</Text>
-                <Text style={itemSubtitle}>
-                  {item.company}
-                  {item.location ? ` | ${item.location}` : ""}
-                  {dateRange(item.startDate, item.endDate, item.current)
-                    ? ` | ${dateRange(item.startDate, item.endDate, item.current)}`
-                    : ""}
-                </Text>
-                {item.description ? <MarkdownText style={bodyText}>{item.description}</MarkdownText> : null}
-                <Bullets items={item.bullets} textStyle={bodyText} />
-                {item.technologies.length > 0 ? (
-                  <Text style={smallText}>
-                    <Text style={styles.bold}>Tecnologías: </Text>
-                    {item.technologies.join(", ")}
+        {data.experience.length > 0 ? (
+          <Section title="Experiencia" dense={dense}>
+            <View style={dense ? { ...styles.itemGroup, gap: 6 } : styles.itemGroup}>
+              {data.experience.map((item) => (
+                <View key={item.id} style={{ gap: dense ? 3 : 4 }}>
+                  <Text style={itemTitle}>{item.position}</Text>
+                  <Text style={itemSubtitle}>
+                    {item.company}
+                    {item.location ? ` | ${item.location}` : ""}
+                    {dateRange(item.startDate, item.endDate, item.current)
+                      ? ` | ${dateRange(item.startDate, item.endDate, item.current)}`
+                      : ""}
                   </Text>
-                ) : null}
-              </View>
-            ))}
-          </View>
-        </Section>
+                  {item.description ? (
+                    <MarkdownText style={bodyText}>{item.description}</MarkdownText>
+                  ) : null}
+                  <Bullets items={item.bullets} textStyle={bodyText} />
+                  {item.technologies.length > 0 ? (
+                    <Text style={smallText}>
+                      <Text style={styles.bold}>Tecnologías: </Text>
+                      {item.technologies.join(", ")}
+                    </Text>
+                  ) : null}
+                </View>
+              ))}
+            </View>
+          </Section>
+        ) : null}
+
+        {data.settings.showProjects && data.projects.length > 0 ? (
+          <Section title="Proyectos" dense={dense}>
+            <View style={dense ? { ...styles.itemGroup, gap: 6 } : styles.itemGroup}>
+              {data.projects.map((project) => (
+                <View key={project.id} style={{ gap: dense ? 3 : 4 }}>
+                  <Text style={itemTitle}>{project.name}</Text>
+                  {project.description ? (
+                    <MarkdownText style={bodyText}>{project.description}</MarkdownText>
+                  ) : null}
+                  <Bullets items={project.bullets} textStyle={bodyText} />
+                  <InlineTagList items={project.technologies} style={smallText} />
+                </View>
+              ))}
+            </View>
+          </Section>
+        ) : null}
 
         <Section title="Educación" dense={dense}>
           {data.education.map((item) => (
@@ -518,6 +540,13 @@ function AtsPDFPage({ data }: { data: CVData }) {
 
 function MultiPageAtsPDFDocument({ data }: { data: CVData }) {
   const [firstExperience, ...remainingExperience] = data.experience
+  const hasSecondPage =
+    remainingExperience.length > 0 ||
+    (data.settings.showProjects && data.projects.length > 0) ||
+    data.education.length > 0 ||
+    data.skills.length > 0 ||
+    data.languages.length > 0 ||
+    (data.settings.showSpecializations && data.specializations.length > 0)
   const firstPageData = {
     ...data,
     experience: firstExperience ? [firstExperience] : [],
@@ -539,7 +568,7 @@ function MultiPageAtsPDFDocument({ data }: { data: CVData }) {
       author={`${data.personal.firstName} ${data.personal.lastName}`}
     >
       <AtsPDFPage data={firstPageData} />
-      <AtsPDFPage data={secondPageData} />
+      {hasSecondPage ? <AtsPDFPage data={secondPageData} wrap /> : null}
     </Document>
   )
 }
@@ -711,7 +740,7 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
         title={`${data.personal.firstName} ${data.personal.lastName} CV`}
         author={`${data.personal.firstName} ${data.personal.lastName}`}
       >
-        <AtsPDFPage data={data} />
+        <AtsPDFPage data={data} wrap={false} />
       </Document>
     )
   }

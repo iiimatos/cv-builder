@@ -42,11 +42,11 @@ export function DesignForm() {
             }
             className="h-8 w-full rounded-lg border border-input bg-background px-2.5 text-sm"
           >
-            <option value="single">Una página</option>
-            <option value="multi">Multipágina</option>
+            <option value="single">Una página estricta</option>
+            <option value="multi">Multipágina completa</option>
           </select>
           <p className="text-xs text-muted-foreground">
-            Una página mantiene el control de espacio. Multipágina deja que el PDF continúe en
+            Una página exige que todo quepa en A4. Multipágina conserva el contenido completo en
             páginas adicionales.
           </p>
         </label>
