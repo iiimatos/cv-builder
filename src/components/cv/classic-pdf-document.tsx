@@ -402,8 +402,8 @@ function AtsPDFPage({ data }: { data: CVData }) {
       size="A4"
       style={{
         ...styles.page,
-        paddingHorizontal: dense ? 34 : 44,
-        paddingVertical: dense ? 28 : 36,
+        paddingHorizontal: dense ? 32 : 44,
+        paddingVertical: dense ? 26 : 36,
       }}
     >
       <View
@@ -506,7 +506,7 @@ function AtsPDFPage({ data }: { data: CVData }) {
 
             {data.settings.showSpecializations && data.specializations.length > 0 ? (
               <Section title="Áreas de especialización" dense={dense}>
-                <Specializations items={data.specializations} textStyle={smallText} />
+                <InlineTagList items={data.specializations} style={smallText} />
               </Section>
             ) : null}
           </View>

@@ -49,19 +49,6 @@ function InlineList({ items, className }: { items: string[]; className?: string 
   )
 }
 
-function BulletList({ items, className }: { items: string[]; className?: string }) {
-  const filtered = items.filter(Boolean)
-  if (filtered.length === 0) return null
-
-  return (
-    <ul className={cn("list-disc space-y-0.5 pl-4 text-[11px] leading-5 text-zinc-800", className)}>
-      {filtered.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  )
-}
-
 function ExperienceItem({
   item,
   bodyText,
@@ -73,17 +60,26 @@ function ExperienceItem({
 }) {
   return (
     <article className={cn("break-inside-avoid", dense ? "space-y-1" : "space-y-1.5")}>
-      <h3 className={cn("font-bold text-zinc-950", dense ? "text-[12px] leading-4" : "text-[13px] leading-5")}>{item.position}</h3>
-      <p className={cn("font-semibold text-zinc-800", dense ? "text-[10px] leading-3.5" : "text-[11px] leading-4")}>
+      <h3
+        className={cn(
+          "font-bold text-zinc-950",
+          dense ? "text-[12px] leading-4" : "text-[13px] leading-5"
+        )}
+      >
+        {item.position}
+      </h3>
+      <p
+        className={cn(
+          "font-semibold text-zinc-800",
+          dense ? "text-[10px] leading-3.5" : "text-[11px] leading-4"
+        )}
+      >
         {item.company}
         {item.location ? ` | ${item.location}` : ""}
         {dateRange(item.startDate, item.endDate, item.current)
           ? ` | ${dateRange(item.startDate, item.endDate, item.current)}`
           : ""}
       </p>
-      {item.location ? (
-        null
-      ) : null}
       {item.description ? (
         <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
           {item.description}
@@ -97,7 +93,12 @@ function ExperienceItem({
         ))}
       </ul>
       {item.technologies.length > 0 ? (
-        <p className={cn("text-zinc-800", dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5")}>
+        <p
+          className={cn(
+            "text-zinc-800",
+            dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5"
+          )}
+        >
           <span className="font-bold text-zinc-950">Tecnologías: </span>
           {item.technologies.join(", ")}
         </p>
@@ -236,7 +237,7 @@ export function MultiPageAtsTemplate({ data, pageRef }: AtsTemplateProps) {
 
                   {showSpecializations ? (
                     <Section title="Áreas de especialización">
-                      <BulletList items={data.specializations} />
+                      <InlineList items={data.specializations} />
                     </Section>
                   ) : null}
                 </div>
@@ -266,17 +267,32 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
         ref={pageRef}
         className={cn(
           "h-[297mm] overflow-hidden bg-white text-zinc-950",
-          dense ? "px-12 py-8" : "px-14 py-10"
+          dense ? "px-11 py-7" : "px-14 py-10"
         )}
       >
-        <header className={cn("border-b border-zinc-400 text-left", dense ? "space-y-1 pb-3" : "space-y-1.5 pb-4")}>
+        <header
+          className={cn(
+            "border-b border-zinc-400 text-left",
+            dense ? "space-y-1 pb-3" : "space-y-1.5 pb-4"
+          )}
+        >
           <h1 className={cn("font-bold leading-none", dense ? "text-[24px]" : "text-[26px]")}>
             {data.personal.firstName} {data.personal.lastName}
           </h1>
-          <p className={cn("font-semibold text-zinc-800", dense ? "text-[11px]" : "text-[12px]")}>
+          <p
+            className={cn(
+              "font-semibold text-zinc-800",
+              dense ? "text-[11px]" : "text-[12px]"
+            )}
+          >
             {data.personal.professionalTitle}
           </p>
-          <p className={cn("text-zinc-700", dense ? "text-[9px] leading-3.5" : "text-[10px] leading-4")}>
+          <p
+            className={cn(
+              "text-zinc-700",
+              dense ? "text-[9px] leading-3.5" : "text-[10px] leading-4"
+            )}
+          >
             {contacts.join(" | ")}
           </p>
         </header>
@@ -301,13 +317,18 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
               <div className={dense ? "space-y-2" : "space-y-2.5"}>
                 {data.projects.map((project) => (
                   <article key={project.id} className="space-y-1">
-                    <h3 className={cn("font-bold", dense ? "text-[11px]" : "text-[12px]")}>{project.name}</h3>
+                    <h3 className={cn("font-bold", dense ? "text-[11px]" : "text-[12px]")}>
+                      {project.name}
+                    </h3>
                     {project.description ? (
                       <CVMarkdown className={cn(bodyText, "text-zinc-700")}>
                         {project.description}
                       </CVMarkdown>
                     ) : null}
-                    <InlineList items={project.technologies} className={dense ? "text-[10px] leading-[1.35]" : undefined} />
+                    <InlineList
+                      items={project.technologies}
+                      className={dense ? "text-[10px] leading-[1.35]" : undefined}
+                    />
                   </article>
                 ))}
               </div>
@@ -319,8 +340,20 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
               <div className={dense ? "space-y-1.5" : "space-y-2.5"}>
                 {data.education.map((item) => (
                   <article key={item.id}>
-                    <h3 className={cn("font-bold text-zinc-950", dense ? "text-[10px]" : "text-[11px]")}>{item.degree}</h3>
-                    <p className={cn("text-zinc-800", dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5")}>
+                    <h3
+                      className={cn(
+                        "font-bold text-zinc-950",
+                        dense ? "text-[10px]" : "text-[11px]"
+                      )}
+                    >
+                      {item.degree}
+                    </h3>
+                    <p
+                      className={cn(
+                        "text-zinc-800",
+                        dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5"
+                      )}
+                    >
                       {item.institution}
                       {dateRange(item.startDate, item.endDate)
                         ? ` | ${dateRange(item.startDate, item.endDate)}`
@@ -333,7 +366,13 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
             <Section title="Habilidades" dense={dense}>
               <div className="space-y-1">
                 {data.skills.map((category) => (
-                  <p key={category.id} className={cn("text-zinc-800", dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5")}>
+                  <p
+                    key={category.id}
+                    className={cn(
+                      "text-zinc-800",
+                      dense ? "text-[10px] leading-[1.35]" : "text-[11px] leading-5"
+                    )}
+                  >
                     <span className="font-bold text-zinc-950">{category.name}: </span>
                     {category.skills.join(", ")}
                   </p>
@@ -356,7 +395,10 @@ export function AtsTemplate({ data, pageRef }: AtsTemplateProps) {
 
               {data.settings.showSpecializations && data.specializations.length > 0 ? (
                 <Section title="Áreas de especialización" dense={dense}>
-                  <BulletList items={data.specializations} className={dense ? "text-[10px] leading-[1.35]" : undefined} />
+                  <InlineList
+                    items={data.specializations}
+                    className={dense ? "text-[10px] leading-[1.35]" : undefined}
+                  />
                 </Section>
               ) : null}
             </div>
