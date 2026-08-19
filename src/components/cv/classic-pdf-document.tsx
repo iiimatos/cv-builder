@@ -289,11 +289,21 @@ function MarkdownText({
   )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+  dense = false,
+}: {
+  title: string
+  children: React.ReactNode
+  dense?: boolean
+}) {
   return (
     <View>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={dense ? { ...styles.sectionHeader, marginBottom: 5 } : styles.sectionHeader}>
+        <Text style={dense ? { ...styles.sectionTitle, fontSize: 8 } : styles.sectionTitle}>
+          {title}
+        </Text>
         <View style={styles.sectionRule} />
       </View>
       {children}
@@ -301,18 +311,24 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-function InlineTagList({ items }: { items: string[] }) {
+function InlineTagList({ items, style }: { items: string[]; style?: TextStyle | TextStyle[] }) {
   const filtered = items.filter(Boolean)
   if (filtered.length === 0) return null
 
   return (
-    <Text style={styles.smallText}>
+    <Text style={style ?? styles.smallText}>
       {filtered.join(" | ")}
     </Text>
   )
 }
 
-function Specializations({ items }: { items: string[] }) {
+function Specializations({
+  items,
+  textStyle,
+}: {
+  items: string[]
+  textStyle?: TextStyle | TextStyle[]
+}) {
   const filtered = items.filter(Boolean)
   if (filtered.length === 0) return null
 
@@ -321,14 +337,20 @@ function Specializations({ items }: { items: string[] }) {
       {filtered.map((item) => (
         <View key={item} style={styles.bulletRow}>
           <Text style={styles.bulletDot}>•</Text>
-          <Text style={styles.smallText}>{item}</Text>
+          <Text style={textStyle ?? styles.smallText}>{item}</Text>
         </View>
       ))}
     </View>
   )
 }
 
-function Bullets({ items }: { items: string[] }) {
+function Bullets({
+  items,
+  textStyle,
+}: {
+  items: string[]
+  textStyle?: TextStyle | TextStyle[]
+}) {
   const bullets = items.filter(Boolean)
   if (bullets.length === 0) return null
 
@@ -337,7 +359,7 @@ function Bullets({ items }: { items: string[] }) {
       {bullets.map((bullet) => (
         <View key={bullet} style={styles.bulletRow}>
           <Text style={styles.bulletDot}>•</Text>
-          <MarkdownText style={styles.bulletText}>{bullet}</MarkdownText>
+          <MarkdownText style={textStyle ?? styles.bulletText}>{bullet}</MarkdownText>
         </View>
       ))}
     </View>
@@ -361,98 +383,164 @@ function contacts(data: CVData) {
 
 function AtsPDFPage({ data }: { data: CVData }) {
   const contactLine = contacts(data).map((item) => item.value).join(" | ")
+  const dense = data.settings.spacing === "compact" || data.settings.fontSize === "compact"
+  const bodyText = dense
+    ? { ...styles.bodyText, fontSize: 8.4, lineHeight: 1.28 }
+    : styles.bodyText
+  const smallText = dense
+    ? { ...styles.smallText, fontSize: 8, lineHeight: 1.25 }
+    : styles.smallText
+  const itemTitle = dense
+    ? { ...styles.itemTitle, fontSize: 9.4, lineHeight: 1.2 }
+    : styles.itemTitle
+  const itemSubtitle = dense
+    ? { ...styles.itemSubtitle, fontSize: 8.2, lineHeight: 1.25 }
+    : styles.itemSubtitle
 
   return (
-    <Page size="A4" style={styles.page}>
-      <View style={{ alignItems: "center", borderBottomWidth: 1, borderBottomColor: "#d4d4d8", paddingBottom: 14 }}>
-        <Text style={{ fontSize: 28, fontWeight: 700 }}>
+    <Page
+      size="A4"
+      style={{
+        ...styles.page,
+        paddingHorizontal: dense ? 34 : 44,
+        paddingVertical: dense ? 28 : 36,
+      }}
+    >
+      <View
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: "#a1a1aa",
+          paddingBottom: dense ? 9 : 12,
+        }}
+      >
+        <Text style={{ fontSize: dense ? 22 : 24, fontWeight: 700, lineHeight: 1.1 }}>
           {data.personal.firstName} {data.personal.lastName}
         </Text>
-        <Text style={{ marginTop: 6, color: "#3f3f46", fontSize: 12, fontWeight: 700 }}>
+        <Text
+          style={{
+            marginTop: dense ? 3 : 4,
+            color: "#27272a",
+            fontSize: dense ? 10 : 11,
+            fontWeight: 700,
+          }}
+        >
           {data.personal.professionalTitle}
         </Text>
-        <Text style={{ marginTop: 8, color: "#52525b", fontSize: 8.5, lineHeight: 1.4, textAlign: "center" }}>
+        <Text
+          style={{
+            marginTop: dense ? 5 : 7,
+            color: "#3f3f46",
+            fontSize: dense ? 7.6 : 8.5,
+            lineHeight: 1.3,
+          }}
+        >
           {contactLine}
         </Text>
       </View>
 
-      <View style={{ gap: 14, paddingTop: 18 }}>
+      <View style={{ gap: dense ? 9 : 13, paddingTop: dense ? 12 : 16 }}>
         {data.summary.trim() ? (
-          <Section title="Resumen profesional">
-            <MarkdownText style={styles.bodyText}>{data.summary}</MarkdownText>
+          <Section title="Resumen profesional" dense={dense}>
+            <MarkdownText style={bodyText}>{data.summary}</MarkdownText>
           </Section>
         ) : null}
 
-        <Section title="Experiencia">
-          <View style={styles.itemGroup}>
+        <Section title="Experiencia" dense={dense}>
+          <View style={dense ? { ...styles.itemGroup, gap: 6 } : styles.itemGroup}>
             {data.experience.map((item) => (
-              <View key={item.id} style={styles.itemNoBorder}>
-                <View style={styles.itemHeader}>
-                  <View>
-                    <Text style={styles.itemTitle}>{item.position}</Text>
-                    <Text style={styles.itemSubtitle}>{item.company}</Text>
-                    {item.location ? <Text style={styles.mutedText}>{item.location}</Text> : null}
-                  </View>
-                  <Text style={styles.date}>{dateRange(item.startDate, item.endDate, item.current)}</Text>
-                </View>
-                {item.description ? <MarkdownText style={styles.bodyText}>{item.description}</MarkdownText> : null}
-                <Bullets items={item.bullets} />
+              <View key={item.id} style={{ gap: dense ? 3 : 4 }}>
+                <Text style={itemTitle}>{item.position}</Text>
+                <Text style={itemSubtitle}>
+                  {item.company}
+                  {item.location ? ` | ${item.location}` : ""}
+                  {dateRange(item.startDate, item.endDate, item.current)
+                    ? ` | ${dateRange(item.startDate, item.endDate, item.current)}`
+                    : ""}
+                </Text>
+                {item.description ? <MarkdownText style={bodyText}>{item.description}</MarkdownText> : null}
+                <Bullets items={item.bullets} textStyle={bodyText} />
                 {item.technologies.length > 0 ? (
-                  <Text style={styles.smallText}>{item.technologies.join(" | ")}</Text>
+                  <Text style={smallText}>
+                    <Text style={styles.bold}>Tecnologías: </Text>
+                    {item.technologies.join(", ")}
+                  </Text>
                 ) : null}
               </View>
             ))}
           </View>
         </Section>
 
-        <View style={{ flexDirection: "row", gap: 24 }}>
-          <View style={{ flex: 1 }}>
-            <Section title="Educación">
-              {data.education.map((item) => (
-                <View key={item.id} style={styles.sideItem}>
-                  <Text style={styles.itemTitle}>{item.degree}</Text>
-                  <Text style={styles.smallText}>{item.institution}</Text>
-                  <Text style={styles.mutedText}>{dateRange(item.startDate, item.endDate)}</Text>
-                </View>
-              ))}
-            </Section>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Section title="Habilidades">
-              {data.skills.map((category) => (
-                <Text key={category.id} style={styles.smallText}>
-                  <Text style={styles.bold}>{category.name}: </Text>
-                  {category.skills.join(", ")}
-                </Text>
-              ))}
-            </Section>
-          </View>
-        </View>
+        <Section title="Educación" dense={dense}>
+          {data.education.map((item) => (
+            <View key={item.id} style={dense ? { ...styles.sideItem, marginBottom: 6 } : styles.sideItem}>
+              <Text style={itemTitle}>{item.degree}</Text>
+              <Text style={smallText}>
+                {item.institution}
+                {dateRange(item.startDate, item.endDate)
+                  ? ` | ${dateRange(item.startDate, item.endDate)}`
+                  : ""}
+              </Text>
+            </View>
+          ))}
+        </Section>
+
+        <Section title="Habilidades" dense={dense}>
+          {data.skills.map((category) => (
+            <Text key={category.id} style={smallText}>
+              <Text style={styles.bold}>{category.name}: </Text>
+              {category.skills.join(", ")}
+            </Text>
+          ))}
+        </Section>
 
         {(data.languages.length > 0 ||
           (data.settings.showSpecializations && data.specializations.length > 0)) ? (
-          <View style={{ flexDirection: "row", gap: 24 }}>
+          <View style={{ gap: dense ? 9 : 13 }}>
             {data.languages.length > 0 ? (
-              <View style={{ flex: 1 }}>
-                <Section title="Idiomas">
-                  <Text style={styles.smallText}>
-                    {data.languages.map((item) => `${item.language}: ${item.level}`).join(" | ")}
-                  </Text>
-                </Section>
-              </View>
+              <Section title="Idiomas" dense={dense}>
+                <Text style={smallText}>
+                  {data.languages.map((item) => `${item.language}: ${item.level}`).join(" | ")}
+                </Text>
+              </Section>
             ) : null}
 
             {data.settings.showSpecializations && data.specializations.length > 0 ? (
-              <View style={{ flex: 1 }}>
-                <Section title="Áreas de especialización">
-                  <Specializations items={data.specializations} />
-                </Section>
-              </View>
+              <Section title="Áreas de especialización" dense={dense}>
+                <Specializations items={data.specializations} textStyle={smallText} />
+              </Section>
             ) : null}
           </View>
         ) : null}
       </View>
     </Page>
+  )
+}
+
+function MultiPageAtsPDFDocument({ data }: { data: CVData }) {
+  const [firstExperience, ...remainingExperience] = data.experience
+  const firstPageData = {
+    ...data,
+    experience: firstExperience ? [firstExperience] : [],
+    education: [],
+    skills: [],
+    languages: [],
+    specializations: [],
+    projects: [],
+  }
+  const secondPageData = {
+    ...data,
+    summary: "",
+    experience: remainingExperience,
+  }
+
+  return (
+    <Document
+      title={`${data.personal.firstName} ${data.personal.lastName} CV`}
+      author={`${data.personal.firstName} ${data.personal.lastName}`}
+    >
+      <AtsPDFPage data={firstPageData} />
+      <AtsPDFPage data={secondPageData} />
+    </Document>
   )
 }
 
@@ -614,6 +702,10 @@ export function ClassicPDFDocument({ data, photoPath }: ClassicPDFDocumentProps)
   }
 
   if (data.settings.template === "ats") {
+    if (data.settings.pageMode === "multi") {
+      return <MultiPageAtsPDFDocument data={data} />
+    }
+
     return (
       <Document
         title={`${data.personal.firstName} ${data.personal.lastName} CV`}
