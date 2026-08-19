@@ -20,8 +20,9 @@ function getPublicPhotoPath(photo?: string) {
   return existsSync(publicPath) ? publicPath : undefined
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const preview = new URL(request.url).searchParams.has("preview")
     const data = await getCVData()
     const document = createElement(CVPDFDocumentRenderer, {
       data,
@@ -32,7 +33,7 @@ export async function GET() {
     return new Response(new Uint8Array(pdf), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="cv.pdf"',
+        "Content-Disposition": `${preview ? "inline" : "attachment"}; filename="cv.pdf"`,
       },
     })
   } catch (error) {

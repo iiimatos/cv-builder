@@ -1,15 +1,18 @@
 "use client"
 
-import { useDeferredValue, useEffect, useRef } from "react"
+import { useDeferredValue, useEffect, useRef, useState } from "react"
 import {
   CheckCircle2,
   Clock3,
+  Eye,
   FileDown,
   Loader2,
   MoreHorizontal,
+  RefreshCw,
   RotateCcw,
   Save,
   TriangleAlert,
+  X,
 } from "lucide-react"
 
 import { CVTemplateRenderer } from "@/components/cv/cv-template-renderer"
@@ -23,6 +26,14 @@ import { SkillsForm } from "@/components/editor/skills-form"
 import { SpecializationsForm } from "@/components/editor/specializations-form"
 import { SummaryForm } from "@/components/editor/summary-form"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,6 +116,108 @@ function EditorNavigation() {
         ))}
       </div>
     </nav>
+  )
+}
+
+function PdfPreviewDialog({
+  disabled,
+  dirty,
+}: {
+  disabled: boolean
+  dirty: boolean
+}) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState("/api/pdf")
+
+  const refreshPreview = () => {
+    setLoading(true)
+    setPreviewUrl(`/api/pdf?preview=${Date.now()}`)
+  }
+
+  const openPreview = () => {
+    if (disabled || dirty) return
+    setOpen(true)
+    refreshPreview()
+  }
+
+  return (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={openPreview}
+        disabled={disabled || dirty}
+        title={dirty ? "Guarda los cambios antes de previsualizar el PDF." : undefined}
+      >
+        <Eye className="size-4" />
+        <span className="hidden sm:inline">Vista previa</span>
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent
+          className="grid h-[calc(100dvh-2rem)] max-h-[920px] max-w-[min(1180px,calc(100vw-2rem))] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-w-[min(1180px,calc(100vw-2rem))]"
+          showCloseButton={false}
+        >
+          <DialogHeader className="border-b bg-background px-4 py-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <DialogTitle>Vista previa del PDF</DialogTitle>
+                <DialogDescription>
+                  Render final generado desde el archivo guardado.
+                </DialogDescription>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={refreshPreview}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Loader2 className="size-3.5 animate-spin" />
+                  ) : (
+                    <RefreshCw className="size-3.5" />
+                  )}
+                  Actualizar
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  render={<a href="/api/pdf" download="cv.pdf" />}
+                >
+                  <FileDown className="size-3.5" />
+                  Descargar
+                </Button>
+                <DialogClose render={<Button type="button" variant="ghost" size="icon-sm" />}>
+                  <X className="size-4" />
+                  <span className="sr-only">Cerrar</span>
+                </DialogClose>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="relative min-h-0 bg-zinc-200 p-2 sm:p-4">
+            {loading ? (
+              <div className="absolute inset-0 z-10 grid place-items-center bg-zinc-200/80 backdrop-blur-[1px]">
+                <div className="inline-flex items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm font-medium shadow-sm">
+                  <Loader2 className="size-4 animate-spin" />
+                  Generando PDF...
+                </div>
+              </div>
+            ) : null}
+            <iframe
+              key={previewUrl}
+              src={previewUrl}
+              title="Vista previa del PDF"
+              className="h-full w-full rounded-lg border bg-white shadow-sm"
+              onLoad={() => setLoading(false)}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
@@ -257,6 +370,7 @@ export function CVEditor() {
         </div>
         <div className="flex items-center gap-3">
           <SaveStatus />
+          <PdfPreviewDialog disabled={!data} dirty={dirty} />
           <Button
             type="button"
             variant="outline"
