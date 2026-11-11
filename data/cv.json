@@ -2,7 +2,7 @@
   "personal": {
     "firstName": "Ivan",
     "lastName": "Matos",
-    "professionalTitle": "Ingeniero de software | Desarrollador Full Stack",
+    "professionalTitle": "Software Engineer | Backend & Full Stack",
     "phone": "+1 (809) 641-5080",
     "email": "ivanmatosvillar@gmail.com",
     "links": [
@@ -12,51 +12,28 @@
         "url": "https://github.com/iiimatos"
       },
       {
-        "id": "f8c136d3-320f-4158-84ea-e85e133f20b6",
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/ivan-ernesto-matos-villar-a00b581b3"
+        "id": "19c05f57-332f-4fe8-be4c-9dac7a3833a7",
+        "label": "Portfolio",
+        "url": "https://www.iiimatos.dev"
       }
     ],
     "location": "Santo Domingo, República Dominicana",
     "photo": "/profile/profile-1787146999386.jpg"
   },
-  "summary": "Ingeniero de Software Full Stack con más de 4 años de experiencia en el desarrollo de soluciones empresariales y plataformas web para los sectores **financiero, gubernamental y privado**. Especializado en **TypeScript, React, Next.js y NestJS**, con experiencia en **arquitectura de software, APIs REST, bases de datos, integraciones empresariales y Cloud & DevOps**. Orientado a construir soluciones **escalables, seguras y mantenibles**, aplicando buenas prácticas de desarrollo y alineando la tecnología con las necesidades del negocio.",
+  "summary": "Ingeniero de Software con más de **4 años de experiencia** desarrollando plataformas empresariales y soluciones tecnológicas para los sectores **financiero y gubernamental**. Especializado en **TypeScript, React, Next.js, NestJS y .NET**, con experiencia en diseño de APIs, arquitectura modular, integraciones corporativas y automatización de procesos. He participado en el desarrollo de sistemas financieros, procesos de onboarding, gestión de inversiones y flujos de aprobación, incorporando mecanismos de auditoría, trazabilidad y controles de cumplimiento.",
   "experience": [
-    {
-      "id": "exp-liga-municipal",
-      "company": "Liga Municipal Dominicana",
-      "position": "Desarrollador Full Stack",
-      "location": "Santo Domingo, República Dominicana",
-      "startDate": "Septiembre 2022",
-      "endDate": "Abril 2024",
-      "current": false,
-      "description": "Desarrollo de **soluciones de software para el sector público** , participando en sistemas orientados a la **gestión municipal y automatización de procesos internos**.",
-      "bullets": [
-        "Desarrollo backend con C# y .NET para plataforma enfocada en la gestión integral de ayuntamientos.",
-        "Desarrollo full stack con Next.js de DocuTracker, sistema para el seguimiento y transferencia de documentos entre departamentos."
-      ],
-      "technologies": [
-        "C#",
-        ".NET",
-        "Next.js",
-        "React",
-        "SQL Server",
-        "REST APIs"
-      ]
-    },
     {
       "id": "exp-united-capital",
       "company": "United Capital Puesto de Bolsa, S.A.",
-      "position": "Ingeniero de software",
+      "position": "Ingeniero de Software",
       "location": "Santo Domingo, República Dominicana",
       "startDate": "Abril 2024",
       "endDate": "",
       "current": true,
-      "description": "Desarrollo y evolución de plataformas empresariales y soluciones financieras, participando en el diseño de arquitectura, automatización de procesos, integraciones corporativas y construcción de aplicaciones full stack orientadas a operaciones internas y clientes.",
+      "description": "Desarrollo y evolución de **plataformas tecnológicas para el sector financiero**, participando en el diseño de soluciones empresariales, integraciones corporativas y automatización de procesos operativos, con enfoque en **auditoría, trazabilidad, procesamiento asíncrono y cumplimiento normativo**.",
       "bullets": [
-        "Desarrollo de aplicaciones **full stack** con **React, Next.js, TypeScript y NestJS**, aplicando **arquitectura modular y buenas prácticas** para plataformas y procesos financieros.",
-        "Desarrollo de soluciones para **onboarding, gestión de clientes, inversiones y flujos de aprobación**.",
-        "Implementación de **auditoría, trazabilidad, procesos asíncronos, notificaciones y controles de cumplimiento**."
+        "Desarrollo de aplicaciones **Full Stack con React, Next.js, TypeScript y NestJS**, utilizando arquitectura modular para facilitar el mantenimiento y evolución de sistemas financieros.",
+        "Implementación de funcionalidades para **onboarding, gestión de clientes, inversiones y flujos de aprobación**, integradas con procesos de negocio."
       ],
       "technologies": [
         "TypeScript",
@@ -72,17 +49,31 @@
         "SharePoint",
         "REST APIs"
       ]
+    },
+    {
+      "id": "exp-liga-municipal",
+      "company": "Liga Municipal Dominicana",
+      "position": "Desarrollador Full Stack",
+      "location": "Santo Domingo, República Dominicana",
+      "startDate": "Septiembre 2022",
+      "endDate": "Abril 2024",
+      "current": false,
+      "description": "Desarrollo de **soluciones tecnológicas para la administración pública**, orientadas a la gestión municipal, digitalización documental y automatización de procesos internos.",
+      "bullets": [
+        "Desarrollo de componentes backend con **C# y .NET** para una plataforma de gestión integral de ayuntamientos.",
+        "Desarrollo Full Stack de **DocuTracker con Next.js**, sistema de seguimiento y transferencia de documentos entre departamentos."
+      ],
+      "technologies": [
+        "C#",
+        ".NET",
+        "Next.js",
+        "React",
+        "SQL Server",
+        "REST APIs"
+      ]
     }
   ],
   "education": [
-    {
-      "id": "edu-software",
-      "institution": "Instituto Tecnológico de las Americas",
-      "degree": "Tecnólogo en Desarrollo de Software",
-      "startDate": "Septiembre 2018",
-      "endDate": "Agosto 2020",
-      "description": ""
-    },
     {
       "id": "ba17a731-54eb-4dae-95f1-20f5ba045932",
       "institution": "Universidad Domínico Americano",
@@ -90,50 +81,84 @@
       "startDate": "Septiembre 2021",
       "endDate": "Agosto 2026",
       "description": ""
+    },
+    {
+      "id": "edu-software",
+      "institution": "Instituto Tecnológico de las Américas",
+      "degree": "Tecnólogo en Desarrollo de Software",
+      "startDate": "Septiembre 2018",
+      "endDate": "Agosto 2020",
+      "description": ""
     }
   ],
   "skills": [
+    {
+      "id": "skill-languages",
+      "name": "Lenguajes",
+      "skills": [
+        "TypeScript",
+        "JavaScript",
+        "Python",
+        "C#",
+        "SQL"
+      ]
+    },
+    {
+      "id": "skill-backend",
+      "name": "Backend y APIs",
+      "skills": [
+        "Node.js",
+        "NestJS",
+        ".NET",
+        "FastAPI",
+        "REST APIs",
+        "TypeORM",
+        "Prisma"
+      ]
+    },
     {
       "id": "skill-frontend",
       "name": "Frontend",
       "skills": [
         "React",
         "Next.js",
-        "TypeScript",
-        "Material UI",
+        "Astro",
         "Tailwind CSS",
-        "Shadcn"
-      ]
-    },
-    {
-      "id": "skill-backend",
-      "name": "Backend",
-      "skills": [
-        "NestJS",
-        "Node.js",
-        ".NET",
-        "REST APIs",
-        "Graphql"
+        "Material UI",
+        "shadcn/ui"
       ]
     },
     {
       "id": "skill-databases",
       "name": "Bases de datos",
       "skills": [
-        "SQL Server",
         "PostgreSQL",
-        "TypeORM",
-        "Prisma"
+        "SQL Server",
+        "Diseño de datos",
+        "Migraciones SQL"
+      ]
+    },
+    {
+      "id": "skill-architecture",
+      "name": "Arquitectura y seguridad",
+      "skills": [
+        "Arquitectura modular",
+        "Clean Architecture",
+        "OAuth 2.0 / OIDC",
+        "Keycloak",
+        "RBAC",
+        "JWT / JWKS"
       ]
     },
     {
       "id": "skill-devops",
-      "name": "DevOps y nube",
+      "name": "DevOps y CI/CD",
       "skills": [
         "Docker",
         "Docker Compose",
+        "GitHub Actions",
         "Azure DevOps",
-        "GitLab CI/CD",
+        "Nginx",
         "Git"
       ]
     }
@@ -151,11 +176,11 @@
     }
   ],
   "specializations": [
-    "Arquitectura de software",
+    "Desarrollo Backend",
+    "Arquitectura de Software",
     "Desarrollo Full Stack",
-    "Integraciones empresariales",
-    "Automatización de procesos",
-    "Sistemas financieros"
+    "Gestión de Identidad y Accesos",
+    "Integraciones Empresariales"
   ],
   "projects": [],
   "settings": {
@@ -168,6 +193,6 @@
     "showLocation": true,
     "showLinks": true,
     "showProjects": false,
-    "showSpecializations": true
+    "showSpecializations": false
   }
 }
